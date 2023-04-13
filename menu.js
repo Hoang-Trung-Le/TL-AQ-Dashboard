@@ -32,7 +32,7 @@ async function b() {
 }
 
 function a(pollutant) {
-  $.get('./e.csv', function (csvString) {
+  $.get("./e.csv", function (csvString) {
     // Use PapaParse to convert string to array of objects
     var data = Papa.parse(csvString, {
       header: true,
