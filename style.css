@@ -52,12 +52,7 @@ body {
   height: 4.5rem;
 }
 
-.nsw-header__wrapper h1{
-  font-size: 30px;
-  margin-bottom: 20px;
-  margin-right: 200x;
-  color: #0052b1;
-}
+
 
 .nsw-header__center {
   flex-grow: 2;
@@ -85,6 +80,17 @@ body {
   margin-top: 5px;
   font-kerning: normal;
 }
+
+.banner {
+  position: relative;
+}
+
+.banner h1{
+  font-size: 35px;
+  font-weight: bolder;
+  color: #0052b1;
+}
+
 
 .dashboard {
   display: flex;
