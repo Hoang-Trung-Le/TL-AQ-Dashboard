@@ -127,7 +127,7 @@ function getMarkerInfo() {
           className: "marker-cluster",
         });
       },
-      showCoverageOnHover: true,
+      showCoverageOnHover: false,
     });
 
     $.get("./AQSs_Info/e.csv", function (csvString) {
