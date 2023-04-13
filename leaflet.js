@@ -681,13 +681,7 @@ var nswBoundary = L.geoJSON(nswMapData, {
   },
 }).addTo(map);
 
-L.geoJSON(geojsonFeature, {
-  onEachFeature: function(feature, layer) {
-    if (feature.properties.name === 'Tasmania') {
-      layer.unbindTooltip();
-    }
-  }
-}).addTo(map);
+
 
 // var baseMaps = {
 //   Default: osm,
