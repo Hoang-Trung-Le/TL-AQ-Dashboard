@@ -184,28 +184,40 @@ body {
 
 
 .select {
-  position: top;
-  display: grid;
-  /* width: 200px; */
   width: 15%;
-  height: 50%;
-  line-height: 1;
+  align-self: flex-start;
+  padding: 30px 10px;
   overflow: hidden;
-  border-radius: 0.25em;
-  padding-bottom: 100px;
-  padding-top: 10px;
-  /* box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); */
 }
 
-.station-model {
-  height: 3rem;
+.station-model label{
   font-size: large;
 }
 
-.select h2 {
-  height: 50px;
-  margin: 0;
+/* Style the custom select box */
+.select-box {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 10px 0;
 }
+
+#station-network {
+  width: 80%;
+  height: 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+select:focus {
+  border: 2px solid #524eee;
+}
+
+
+
+
+
+
 
 /* #loading{
   display: block;
@@ -375,7 +387,7 @@ body {
   margin: 5px;
   min-width: 60px;
   text-align: center;
-  font-weight: bold;
+  /* font-weight: bold; */
   border-radius: 10px;
 }
 
@@ -485,16 +497,7 @@ hr {
   display: none;
 }
 
-.air-quality-gradient {
-  height: 50px;
-  display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    to right, #00e400, #ffff00, #ff7e00, #ff0000
-  );
-}
+
 
 .map-air-quality-legend {
   display: flex;
@@ -560,6 +563,8 @@ hr {
 
 .slider{
   width: 100%; 
-  height: 25px; 
+  height: 30px;
 }
+
+
 

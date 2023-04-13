@@ -46,10 +46,8 @@
     <!-- Chart.JS Annotation Plugin-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.min.js"></script>
 
-
     <link rel="stylesheet" href="./ControlSidebar.css" />
     <script src="./ControlSidebar.js"></script>
-    
 
     <!-- Marker cluster -->
     <link
@@ -105,13 +103,25 @@
     <div class="dashboard">
       <div class="select">
         <div class="station-model">
-          <label for="station-network">Model</label><br>
-          <select id="station-network">
-            <option value="Option 1">New South Wales</option>
-            <option value="Option 2">North Sydney</option>
-            <option value="Option 3">South Sydney</option>
-            <option value="Option 4">Hunter Valley</option>
-          </select>
+          <label for="station-network">Region</label><br />
+          <div class="select-box">
+            <select id="station-network">
+              <option value="Option 1">New South Wales</option>
+              <option value="Option 2">North Sydney</option>
+              <option value="Option 3">South Sydney</option>
+              <option value="Option 4">Hunter Valley</option>
+            </select>
+          </div>
+        </div>
+        <div class="station-model">
+          <label for="station-network">Time scope</label><br />
+          <div class="select-box">
+            <select id="station-network">
+              <option value="Option 1">24 hour</option>
+              <option value="Option 2">48 hour</option>
+              <option value="Option 3">72 hour</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -124,15 +134,31 @@
       <div class="dashboard__right-container">
         <div class="pollutant-selector">
           <div class="radio-item">
-            <input type="radio" name="pollutant" data-pollutant="OZONE" id="o3" checked="checked" />
+            <input
+              type="radio"
+              name="pollutant"
+              data-pollutant="OZONE"
+              id="o3"
+              checked="checked"
+            />
             <label for="o3">O3</label>
           </div>
           <div class="radio-item">
-            <input type="radio" name="pollutant" data-pollutant="PM25" id="pm25"/>
+            <input
+              type="radio"
+              name="pollutant"
+              data-pollutant="PM25"
+              id="pm25"
+            />
             <label for="pm25">PM 2.5</label>
           </div>
           <div class="radio-item">
-            <input type="radio" name="pollutant" data-pollutant="other" id="other"/>
+            <input
+              type="radio"
+              name="pollutant"
+              data-pollutant="other"
+              id="other"
+            />
             <label for="other">Other...</label>
           </div>
         </div>
@@ -177,9 +203,17 @@
       </div>
     </div>
 
-    <div class='time-slider' id='slider-bar'>
-      <h2>Forecast hour: <label id='active-hour'>11 AM 1/1</label></h2>
-      <input id='time-input' class='slider' type='range' min='0' max='23' step='1' value='0' />
+    <div class="time-slider" id="slider-bar">
+      <h2>Forecast hour: <label id="active-hour">11 AM 1/1</label></h2>
+      <input
+        id="time-input"
+        class="slider"
+        type="range"
+        min="0"
+        max="23"
+        step="1"
+        value="0"
+      />
       <script src="./timeslider.js"></script>
     </div>
 
@@ -188,7 +222,8 @@
       <h2 class="disclaimer-flex">Stats</h2>
     </div>
 
-    
+    <input type="range" min="0" max="100" value="50" id="slider">
+
 
     <footer class="global__footer">
       <div class="section__content">
