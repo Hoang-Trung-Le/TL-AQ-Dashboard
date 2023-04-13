@@ -47,7 +47,7 @@ function a(pollutant) {
         // markersInfo.push({ title: data[i].title, o3Value: data[i]["O3_Value"] });
         stationNames.push(data[i].title);
         // console.log(stationNames[i]);
-        getData(pollutant, stationNames[i], "./forecast1.csv").then(
+        getData(pollutant, stationNames[i], "./AQSs_Info/forecast1.csv").then(
           (result) => {
             // extract data from forecastData
             const forecastXValues = result.map((d) => d.date);

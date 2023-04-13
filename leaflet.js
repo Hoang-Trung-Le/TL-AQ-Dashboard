@@ -130,7 +130,7 @@ function getMarkerInfo() {
       showCoverageOnHover: true,
     });
 
-    $.get("./e.csv", function (csvString) {
+    $.get("./AQSs_Info/e.csv", function (csvString) {
       // Use PapaParse to convert string to array of objects
       var data = Papa.parse(csvString, {
         header: true,
@@ -261,7 +261,7 @@ function generateMarkerContent(title, lat, lng) {
     const ctx4 = canvas4.getContext("2d");
 
     if (canvas1) {
-      getOzoneDataForLocation(title, ".forecast1.csv").then(
+      getOzoneDataForLocation(title, "./AQSs_Info/forecast1.csv").then(
         (result) => {
           // extract data from forecastData
           const forecastXValues = result.forecastData.map((d) => d.date);
@@ -319,7 +319,7 @@ function generateMarkerContent(title, lat, lng) {
           getHistoryDataForLocation(
             title,
             "NO2",
-            "./forecast1.csv"
+            "./AQSs_Info/forecast1.csv"
           ).then((result) => {
             // extract data from historyData
             const historyXValues = result.map((d) => d.date);
@@ -333,7 +333,7 @@ function generateMarkerContent(title, lat, lng) {
           getHistoryDataForLocation(
             title,
             "WDR",
-            "./forecast1.csv"
+            "./AQSs_Info/forecast1.csv"
           ).then((result) => {
             // extract data from historyData
             const historyXValues = result.map((d) => d.date);
@@ -347,7 +347,7 @@ function generateMarkerContent(title, lat, lng) {
           getHistoryDataForLocation(
             title,
             "WSP",
-            "./forecast1.csv"
+            "./AQSs_Info/forecast1.csv"
           ).then((result) => {
             // extract data from historyData
             const historyXValues = result.map((d) => d.date);
