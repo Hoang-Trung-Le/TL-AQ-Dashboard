@@ -122,7 +122,7 @@ function getMarkerInfo() {
       iconCreateFunction: function (cluster) {
         const childCount = cluster.getChildCount();
         return L.divIcon({
-          html: `<img src="/images/markerCluster.svg">
+          html: `<img src="./images/markerCluster.svg">
                   <span>${childCount}</span>`,
           className: "marker-cluster",
         });
