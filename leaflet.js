@@ -1,12 +1,19 @@
 // Initial configuration of map
+
+const southWest = new L.LatLng(-37.50528021, 130.9992792),
+  northEast = new L.LatLng(-28.15701999, 163.638889),
+  bounds = new L.LatLngBounds(southWest, northEast);
+
 let config = {
   minZoom: 6,
   maxZoom: 12,
+  maxBounds: bounds,
+  maxBoundsViscosity: 0.9,
 };
 // Magnification with which the map will start
 const zoom = 6;
 // Coordinates of NSW geographic center
-const cenLat = -33.163191;
+const cenLat = -33.0;
 const cenLng = 147.032179;
 
 var map = L.map("mapid", config).setView([cenLat, cenLng], zoom); // ([coordinates], zoom scale)
@@ -20,26 +27,26 @@ var osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 L.control.scale({ imperial: false }).addTo(map);
 
-var StamenTerrain = L.tileLayer(
-  "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}",
-  {
-    attribution:
-      'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    subdomains: "abcd",
-    minZoom: 0,
-    maxZoom: 18,
-    ext: "png",
-  }
-);
+// var StamenTerrain = L.tileLayer(
+//   "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}",
+//   {
+//     attribution:
+//       'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+//     subdomains: "abcd",
+//     minZoom: 0,
+//     maxZoom: 18,
+//     ext: "png",
+//   }
+// );
 
-var StadiaAlidadeSmoothDark = L.tileLayer(
-  "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
-  {
-    maxZoom: 20,
-    attribution:
-      '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-  }
-);
+// var StadiaAlidadeSmoothDark = L.tileLayer(
+//   "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+//   {
+//     maxZoom: 20,
+//     attribution:
+//       '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+//   }
+// );
 
 // Home button
 {
@@ -101,28 +108,28 @@ var StadiaAlidadeSmoothDark = L.tileLayer(
   // const compareToArrays = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 }
 
-
 var featureGroups = L.featureGroup().addLayer(map);
 var markersInfo = [];
-
+var sidebar = L.control
+  .sidebar("sidebar", {
+    autopan: true,
+    position: "right",
+  })
+  .addTo(map);
 var markerInfoPromise = getMarkerInfo();
-// markerInfoPromise.then(function(markers) {
-//   console.log(markersInfo);
-// });
 
 //! Potential overlapping problem can be improved (featureGroup and markerClusterGroup)
 // Read markers data from data.csv
 function getMarkerInfo() {
   return new Promise(function (resolve, reject) {
-    // var markersInfo = [];
     var activeMarker = null;
-    // Create a DivIcon with custom HTML content
 
+    // Create a DivIcon with custom HTML content
     var markerClusterGroup = L.markerClusterGroup({
       iconCreateFunction: function (cluster) {
         const childCount = cluster.getChildCount();
         return L.divIcon({
-          html: `<img src='./images/markerCluster.svg'>
+          html: `<img src='./assets/images/markerCluster.svg'>
                   <span>${childCount}</span>`,
           className: "marker-cluster",
         });
@@ -137,17 +144,6 @@ function getMarkerInfo() {
         dynamicTyping: true,
       }).data;
 
-      // Create a new panel for the new tab
-      // var newPanel = L.DomUtil.create("div", "sidebar-pane");
-      // newPanel.innerHTML = "<h1>New Tab Content</h1>";
-
-      var sidebar = L.control
-        .sidebar("sidebar", {
-          autopan: true,
-          position: "right",
-        })
-        .addTo(map);
-      
       for (let i = 0; i < data.length - 1; i++) {
         (function () {
           // Create a new scope for each iteration of the loop
@@ -159,11 +155,9 @@ function getMarkerInfo() {
           if (row.lat != null && row.lng != null) {
             latlngs = L.latLng([row.lat, row.lng]);
             let marker = L.marker(latlngs).addTo(featureGroups);
-            marker
-              .setIcon(colorMarker("default"))
-              .bindTooltip(data[i].title, {
-                direction: "top",
-              });
+            marker.setIcon(colorMarker("default")).bindTooltip(data[i].title, {
+              direction: "top",
+            });
             marker.on("click", function () {
               if (activeMarker != null) {
                 activeMarker.setIcon(colorMarker("default"));
@@ -180,14 +174,19 @@ function getMarkerInfo() {
           }
         })();
       }
+      // Get the close button element
+      const closeButton = document.querySelector(".close");
+      // Add an event listener to the close button
+      if (closeButton) {
+        closeButton.addEventListener("click", function () {
+          if (activeMarker != null) {
+            activeMarker.setIcon(colorMarker("default"));
+            activeMarker = null;
+          }
+        });
+      }
       map.addLayer(markerClusterGroup);
-
       resolve(markersInfo);
-      var bound = featureGroups.getBounds();
-      map.fitBounds(featureGroups.getBounds(), {
-        animate: false,
-      });
-      // map.setView(L.latLng(cenLat, cenLng), 6);
     });
   });
 }
@@ -196,9 +195,12 @@ function colorMarker(state) {
   if (state == "selected") {
     var size = 40;
     var color = "#ff0000";
-  } else {
+  } else if (state == "default") {
     var size = 30;
     var color = "#524eee";
+  } else if (state == "purpleair") {
+    var size = 30;
+    var color = "#aa44aa";
   }
 
   const svgTemplate = `
@@ -215,6 +217,80 @@ function colorMarker(state) {
     tooltipAnchor: [1, -size],
   });
   return colorIcon;
+}
+
+var purpleairFeatureGroups = L.featureGroup().addLayer(map);
+var purpleairInfo = [];
+var purpleairPromise = getPurpleAirInfo(purpleairInfo, purpleairFeatureGroups);
+import purpleairSensors from "./AQSs_Info/sensors.js";
+console.log(nswMapData);
+console.log(purpleairSensors);
+
+function getPurpleAirInfo(markersInfo, featureGroups) {
+  return new Promise(function (resolve, reject) {
+    var activeMarker = null;
+
+    // Create a DivIcon with custom HTML content
+    var purpleairMarkerClusterGroup = L.markerClusterGroup({
+      iconCreateFunction: function (cluster) {
+        const childCount = cluster.getChildCount();
+        return L.divIcon({
+          html: `<img src='./assets/images/markerPurpleAirCluster.svg'>
+                  <span>${childCount}</span>`,
+          className: "marker-cluster",
+        });
+      },
+      showCoverageOnHover: false,
+    });
+
+    // Create a new panel for the new tab
+    // var sidebar = L.control
+    //   .sidebar("sidebar", {
+    //     autopan: true,
+    //     position: "right",
+    //   })
+    //   .addTo(map);
+
+    const purpleairSensorsData = purpleairSensors.data;
+
+    for (let i = 0; i < purpleairSensorsData.length; i++) {
+      const purpleairSensor = purpleairSensorsData[i];
+      const purpleairSensorName = purpleairSensor[1];
+      const purpleairSensorLatitude = purpleairSensor[2];
+      const purpleairSensorLongitude = purpleairSensor[3];
+      (function () {
+        var purpleairLatLng = L.latLng([
+          purpleairSensorLatitude,
+          purpleairSensorLongitude,
+        ]);
+        let purpleairMarker = L.marker(purpleairLatLng).addTo(featureGroups);
+        purpleairMarker
+          .setIcon(colorMarker("purpleair"))
+          .bindTooltip(purpleairSensorName, {
+            direction: "top",
+          });
+        purpleairMarker.on("click", function () {
+          if (activeMarker != null) {
+            activeMarker.setIcon(colorMarker("purpleair"));
+          }
+          activeMarker = purpleairMarker;
+          purpleairMarker.setIcon(colorMarker("selected"));
+          sidebar
+            .setContent(
+              generateMarkerContent(
+                purpleairSensorName,
+                purpleairSensorLatitude,
+                purpleairSensorLongitude
+              )
+            )
+            .show();
+        });
+        purpleairMarkerClusterGroup.addLayer(purpleairMarker);
+      })();
+    }
+    map.addLayer(purpleairMarkerClusterGroup);
+    resolve(purpleairInfo);
+  });
 }
 
 function generateMarkerContent(title, lat, lng) {
@@ -525,13 +601,13 @@ async function getOzoneDataForLocation(location, csvFilePath) {
       minute: "2-digit",
     })
   );
-  forecastData = [];
+  var forecastData = [];
   for (let i = 0; i < data.length; i++) {
     if (!isNaN(forecastHours[i]) && forecastHours[i] > 0) {
       forecastData.push({ date: date[i], ozone: data[i] });
     }
   }
-  historyData = [];
+  var historyData = [];
   for (let i = 0; i < data.length; i++) {
     if (!isNaN(forecastHours[i]) && forecastHours[i] <= 0) {
       historyData.push({ date: date[i], ozone: data[i] });
@@ -567,109 +643,37 @@ async function getHistoryDataForLocation(location, parameter, csvFilePath) {
   return historyData;
 }
 
-// Wait for the Promise to resolve before accessing markerinfo
-// var markerInfoPromise = getMarkerInfo();
-// markerInfoPromise.then(function (markersInfo) {
-// 	// Create a new Leaflet Sidebar instance
-// 	// var sidebar = L.control.sidebar({
-// 	// 	autopan: true,       // whether to center the map on the sidebar
-// 	// 	closeButton: true,   // whether to show a close button in the sidebar
-// 	// 	container: 'sidebar', // the ID of the sidebar container
-// 	//   }).addTo(map);
-// 	var sidebar = L.control.sidebar('sidebar', {
-// 		autopan: true,
-// 		position: 'right',
-// 		closeButton: true,
-// 	});
+// let largestLongitude = Infinity;
+// let largestLatitude = Infinity;
 
-// 	map.addControl(sidebar);
-// 	console.log(markersInfo);
-// 	// Iterate over the markerinfo array and create a marker for each item
-// 	// for (var i = 0; i < markersInfo.length; i++) {
-// 	// var item = markersInfo[i];
+// for (let i = 0; i < nswMapData.features.length; i++) {
+//   const feature = nswMapData.features[i];
+//   const coords = feature.geometry.coordinates;
 
-// 	// // Create a new Leaflet marker for the item
-// 	// var marker = L.marker([item.lat, item.lng]).addTo(map);
+//   for (let j = 0; j < coords.length; j++) {
+//     const polygonCoords = coords[j];
 
-// 	// Bind a click event to the marker
-// 	// featureGroups.on('click', function (e) {
-// 	// 	// Update the content of the sidebar with the description
-// 	// 	sidebar.setContent(markersInfo[i]);
-// 	// 	// Show the sidebar
-// 	// 	sidebar.show();
-// 	featureGroups.on('click', function () {
-// 		// var marker = event.layer;
-// 		sidebar.setContent('3');
-// 	});
+//     for (let k = 0; k < polygonCoords.length; k++) {
+//       const pointCoords = polygonCoords[k];
 
-// 	// Do something with the updated markerinfo variable
-// });
+//       for (let l = 0; l < pointCoords.length; l++) {
+//         const longitude = pointCoords[l][0];
+//         const latitude = pointCoords[l][1];
 
-// featureGroups.on('click', function () {
-// 	sidebar.setContent('abc').show();
-// });
+//         if (longitude < largestLongitude) {
+//           largestLongitude = longitude;
+//         }
 
-// map.addControl(sidebar);
-
-// // .on('click', function(){
-// // sidebar.setContent('Null Island').show();
-// // });
-
-// var marker2 = L.marker([40,40]).addTo(map).on('click', function(){
-// sidebar.setContent('Somewhere else').show();
-// });
-
-// // console.log(markers[1]);
-// marks.forEach(function (marks) {
-// 	marks.addTo(map);
-// });
-
-// console.log(bound);
-
-// featureGroups.addLayer(markers);
-
-// create feature group
-// add markers to map
-
-// create feature group with markers
-// groupBounds = new L.featureGroup(featureGroups);
-
-// // fitBounds of feature group to map
-// map.fitBounds(groupBounds.getBounds(), {
-// 	padding: [30, 30],
-// });
-
-// // add event listener to markers to open sidebar
-// groupBounds.on("click", function (e) {
-// 	if (e.layer instanceof L.Marker) {
-// 		showSidebarWidthText(e.layer.options["marker-options-id"]);
-// 	}
-// });
-
-// // add comment to sidebar depending on marker id
-// function showSidebarWidthText(id) {
-// 	data.filter((marker) => {
-// 		if (marker.id === id) {
-// 			document.body.classList.add("active-sidebar");
-// 			addContentToSidebar(marker);
-// 		}
-// 	});
+//         if (latitude < largestLatitude) {
+//           largestLatitude = latitude;
+//         }
+//       }
+//     }
+//   }
 // }
 
-// for (var i = 0; i < markers.length; i++) {
-// 	(function (marker) {
-// 		marker.on('mouseover', function () {
-// 		  marker.setIcon(largeIcon);
-// 		});
-
-// 		marker.on('mouseout', function () {
-// 		  marker.setIcon(defaultIcon);
-// 		});
-// 	  })(L.marker(markers[i], {icon: defaultIcon}).addTo(map));
-//   }
-
-
-
+// console.log("Smallest longitude:", largestLongitude);
+// console.log("Smallest latitude:", largestLatitude);
 
 var nswBoundary = L.geoJSON(nswMapData, {
   style: function (geoJsonFeature) {
@@ -681,8 +685,6 @@ var nswBoundary = L.geoJSON(nswMapData, {
   },
 }).addTo(map);
 
-
-
 // var baseMaps = {
 //   Default: osm,
 //   "Ozone O3": StamenTerrain,
@@ -690,183 +692,33 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // };
 // L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
-// // ------------------------------------------------------------
-// // async function to get data from json
-// async function fetchData(url) {
-// 	try {
-// 		const response = await fetch(url);
-// 		const data = await response.json();
-// 		return data;
-// 	} catch (err) {
-// 		console.error(err);
-// 	}
-// }
+// const fields = [
+//   "name",
+//   "location_type",
+//   "latitude",
+//   "longitude",
+//   "uptime",
+//   "pa_latency",
+//   "last_seen",
+//   "last_modified",
+//   "date_created",
+// ];
 
-// // --------------------------------------------------
-// // button to close sidebar
+// const nwlng = 140.9992792;
+// const nwlat = -28.15701999;
+// const selng = 153.638889;
+// const selat = -37.50528021;
 
-// const buttonClose = document.querySelector(".close-button");
+// const url = `https://api.purpleair.com/v1/sensors?fields=${fields.join(
+//   "%2C%20"
+// )}&nwlng=${nwlng}&nwlat=${nwlat}&selng=${selng}&selat=${selat}`;
 
-// let featureGroups = [];
-// let groupBounds;
-// let latlngs = [];
-
-// // function to add markers to map
-// fetchData("./places.json")
-// 	.then((data) => {
-// 		// create markers width "marker-options-id"
-// 		data.map((marker) => {
-// 			featureGroups.push(
-// 				L.marker(marker.coords, {
-// 					icon: L.divIcon({
-// 						className: "leaflet-marker-icon",
-// 						html: `${marker.id}`,
-// 						iconSize: L.point(30, 30),
-// 						popupAnchor: [3, -5],
-// 					}),
-// 					"marker-options-id": marker.id,
-// 				})
-// 			);
-// 			latlngs.push(marker.coords);
-// 		});
-
-// 		// add polyline to map
-// 		L.polyline(latlngs, {
-// 			color: "#ff3939",
-// 			weight: 2,
-// 		}).addTo(map);
-
-// 		return data;
-// 	})
-// 	.then((data) => {
-// 		// create feature group
-// 		// add markers to map
-// 		featureGroups.map((marker) => {
-// 			marker.addTo(map);
-// 		});
-
-// 		// create feature group with markers
-// 		groupBounds = new L.featureGroup(featureGroups);
-
-// 		// fitBounds of feature group to map
-// 		map.fitBounds(groupBounds.getBounds(), {
-// 			padding: [50, 50],
-// 		});
-
-// 		// add event listener to markers to open sidebar
-// 		groupBounds.on("click", function (e) {
-// 			if (e.layer instanceof L.Marker) {
-// 				showSidebarWidthText(e.layer.options["marker-options-id"]);
-// 			}
-// 		});
-
-// 		// add comment to sidebar depending on marker id
-// 		function showSidebarWidthText(id) {
-// 			data.filter((marker) => {
-// 				if (marker.id === id) {
-// 					document.body.classList.add("active-sidebar");
-// 					addContentToSidebar(marker);
-// 				}
-// 			});
-// 		}
-// 	});
-
-// // --------------------------------------------------
-// // close when click esc
-// document.addEventListener("keydown", function (event) {
-// 	// close sidebar when press esc
-// 	if (event.key === "Escape") {
-// 		closeSidebar();
-// 	}
-// });
-
-// // close sidebar when click on close button
-// buttonClose.addEventListener("click", () => {
-
-// 	// document.getElementsById('sidebar').style.display = 'none';
-// 	// close sidebar when click on close button
-// 	closeSidebar();
-// });
-
-// // close sidebar when click outside
-// document.addEventListener("click", (e) => {
-//   const target = e.target;
-//   if (
-//     !target.closest(".sidebar") &&
-//     !target.classList.contains("leaflet-marker-icon")
-//   ) {
-//     closeSidebar();
-//   }
-// });
-
-// // document.querySelector('.close-button').addEventListener('click', function() {
-// //     document.getElementsByClassName('active-sidebar').style.display = 'none';
-// // });
-
-// // --------------------------------------------------
-// // close sidebar
-
-// function closeSidebar() {
-// 	// remove class active-sidebar
-// 	// document.body.classList.remove("active-sidebar");
-// 	// document.body.classList.remove(".sidebar");
-// 	const element = document.querySelector(".sidebar");
-// 	element.style.display = 'none';
-// 	// document.getElementsByClassName('sidebar').style.display = 'none';
-
-// 	// bounds map to default
-// 	boundsMap();
-// }
-
-// // --------------------------------------------------
-// // add content to sidebar
-
-function addContentToSidebar(marker) {
-  const { id, title, small, description, img, coords } = marker;
-  const smallInfo = small !== undefined ? `<small>${small}</small>` : "";
-
-  // create sidebar content
-  const sidebarTemplate = `
-	  <article class="sidebar-content">
-		<h1>${title}</h1>
-		<div class="marker-id">${id}</div>
-		<div class="info-content">
-		  <img class="img-zoom" src="${img.src}" alt="${img.alt}">
-		  ${smallInfo}
-		  <div class="info-description">${description}</div>
-		</div>
-	  </article>
-	`;
-
-  const sidebar = document.querySelector(".sidebar");
-  const sidebarContent = document.querySelector(".sidebar-content");
-
-  // always remove content before adding new one
-  sidebarContent?.remove();
-
-  // add content to sidebar
-  sidebar.insertAdjacentHTML("beforeend", sidebarTemplate);
-
-  sidebar.style.display = "block";
-
-  // set bounds depending on marker coords
-  boundsMap(coords);
-}
-
-// // --------------------------------------------------
-// // bounds map when sidebar is open
-function boundsMap(coords) {
-  const sidebar = document.querySelector(".sidebar").offsetWidth;
-
-  const marker = L.marker(coords);
-  const group = L.featureGroup([marker]);
-
-  // bounds depending on whether we have a marker or not
-  const bounds = coords ? group.getBounds() : groupBounds.getBounds();
-
-  // set bounds of map depending on sidebar
-  // width and feature group bounds
-  map.fitBounds(bounds, {
-    paddingTopLeft: [coords ? sidebar : 0, 10],
-  });
-}
+// fetch(url, {
+//   method: "GET",
+//   headers: {
+//     "X-API-Key": "D80F3AFD-DDAD-11ED-BD21-42010A800008",
+//   },
+// })
+//   .then((responsePurpleAir) => responsePurpleAir.json())
+//   .then((dataPurpleAir) => console.log(dataPurpleAir))
+//   .catch((error) => console.error(error));

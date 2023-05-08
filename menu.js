@@ -3,31 +3,52 @@ window.addEventListener("DOMContentLoaded", (event) => {
 });
 
 b();
-async function b() {
-  const pollutantButtons = document.querySelectorAll(
-    'input[type="radio"][name="pollutant"]'
-  );
-  var clickedPollutantButton = document.querySelector(
-    'input[type="radio"][name="pollutant"]:checked'
-  );
-  console.log(clickedPollutantButton);
-  pollutantButtons.forEach((button) => {
-    button.addEventListener("change", (event) => {
-      clickedPollutantButton.removeAttribute("checked");
-      clickedPollutantButton = event.target;
-      clickedPollutantButton.setAttribute("checked", "checked");
-      stationsInfo = document.querySelectorAll(".stations-info");
-      console.log(stationsInfo);
-      stationsInfo.forEach((container) => {
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-      });
+// async function b() {
+//   const pollutantButtons = document.querySelectorAll(
+//     'input[type="radio"][name="pollutant"]'
+//   );
+//   var clickedPollutantButton = document.querySelector(
+//     'input[type="radio"][name="pollutant"]:checked'
+//   );
+//   console.log(clickedPollutantButton);
+//   pollutantButtons.forEach((button) => {
+//     button.addEventListener("change", (event) => {
+//       clickedPollutantButton.removeAttribute("checked");
+//       clickedPollutantButton = event.target;
+//       clickedPollutantButton.setAttribute("checked", "checked");
+//       stationsInfo = document.querySelectorAll(".stations-info");
+//       console.log(stationsInfo);
+//       stationsInfo.forEach((container) => {
+//         while (container.firstChild) {
+//           container.removeChild(container.firstChild);
+//         }
+//       });
 
-      console.log(event.target.dataset.pollutant);
-      pollutant = event.target.dataset.pollutant;
-      a(pollutant);
+//       console.log(event.target.dataset.pollutant);
+//       pollutant = event.target.dataset.pollutant;
+//       a(pollutant);
+//     });
+//   });
+// }
+
+async function b() {
+  const buttonApplySelection = document.querySelector(".select-button");
+  console.log(buttonApplySelection);
+  buttonApplySelection.addEventListener("click", () => {
+    var pollutantSelection = document.querySelector("#select-pollutant");
+    console.log(pollutantSelection);
+    selectedPollutant = pollutantSelection.value;
+    console.log(selectedPollutant);
+    stationsInfo = document.querySelectorAll(".stations-info");
+    console.log(stationsInfo);
+    stationsInfo.forEach((container) => {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
     });
+    const container = document.querySelector(".stations-info");
+    container.innerHTML = `<div class="loader"></div>`;
+    a(selectedPollutant);
   });
 }
 
@@ -140,8 +161,10 @@ function displayStationNames(stationNames) {
     }
 
     html += `<li class="station-item">
-      <div class="station-container">
-        
+      <div
+        class="station-container"
+        style="border-left: 8px solid var(--${classList})"
+      >
         <div class="station-name">${stationName}</div>
         <div class="station-time">${stationTime}</div>
         <div class="station-value ${classList}">${stationValue}</div>

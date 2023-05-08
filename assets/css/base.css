@@ -1,0 +1,38 @@
+:root {
+  --good: #00e400;
+  --moderate: #ffff00;
+  --unhealthy: #ff7e00;
+  --harmful: #ff0000;
+  --default-header-color: #002664;
+  --slider-height: 15px;
+}
+
+*,
+:after,
+:before {
+  box-sizing: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  font-size: 100%;
+  line-height: 1.6rem;
+  font-family: "Open Sans", sans-serif;
+  box-sizing: border-box;
+}
+
+.grid {
+  width: 1200px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.grid_full-width {
+  width: 100%;
+}
+
+.grid__row {
+  display: flex;
+  flex-wrap: wrap;
+}

@@ -15,8 +15,8 @@
       rel="stylesheet"
     />
     <link rel="icon" href="/images/nsw-logo.svg" />
-
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
 
     <!-- Leaflet inclusion -->
     <link
@@ -46,7 +46,7 @@
     <!-- Chart.JS Annotation Plugin-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.min.js"></script>
 
-    <link rel="stylesheet" href="./ControlSidebar.css" />
+    <link rel="stylesheet" href="./assets/css/ControlSidebar.css" />
     <script src="./ControlSidebar.js"></script>
 
     <!-- Marker cluster -->
@@ -69,6 +69,20 @@
       <div class="nsw-container">
         <p>A Website for Deep Learning Application</p>
       </div>
+      <ul id="nav">
+        <li><a href="">Home</a></li>
+        <li><a href="">About</a></li>
+        <li><a href="">More info</a></li>
+        <li><a href="">Contact</a></li>
+        <li>
+          <a href="">Miscellaneous</a>
+          <ul class="subnav">
+            <li><a href="">Other 1 ...</a></li>
+            <li><a href="">Other 2</a></li>
+            <li><a href="">Other 3</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
 
     <header class="nsw-header">
@@ -102,39 +116,168 @@
       </div>
     </header>
 
-    <div class="dashboard">
-      <div class="select">
-        <div class="station-model">
-          <label for="station-network">Region</label><br />
-          <div class="select-box">
-            <select id="station-network">
-              <option value="Option 1">New South Wales</option>
-              <option value="Option 2">North Sydney</option>
-              <option value="Option 3">South Sydney</option>
-              <option value="Option 4">Hunter Valley</option>
-            </select>
+    <main>
+      <div class="dashboard">
+        <div class="dashboard-block dashboard-block__left-container">
+          <div class="select-header">
+            <h2>Select option</h2>
+          </div>
+          <div class="station-model">
+            <label for="station-network">Region</label><br />
+            <div class="select-box">
+              <select class="station-network" id="select-region">
+                <option value="NSW">New South Wales</option>
+                <option value="NS">North Sydney</option>
+                <option value="SS">South Sydney</option>
+                <option value="HV">Hunter Valley</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="station-model">
+            <label for="station-network">Model type</label><br />
+            <div class="select-box">
+              <select class="station-network" id="select-model">
+                <option value="CNN">CNN-LSTM</option>
+                <option value="BNN">BNN-CNN-LSTM</option>
+                <option value="Other">Other ...</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="station-model">
+            <label for="station-network">Time scope</label><br />
+            <div class="select-box">
+              <select class="station-network" id="select-time">
+                <option value="24">24 hour</option>
+                <option value="48">48 hour</option>
+                <option value="72">72 hour</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="station-model">
+            <label for="station-network">Air pollutant</label><br />
+            <div class="select-box">
+              <select class="station-network" id="select-pollutant">
+                <option value="OZONE">Ozone (O3)</option>
+                <option value="PM25">PM 2.5</option>
+                <option value="PM10">PM 10</option>
+                <option value="CO2">CO2</option>
+                <option value="Other">Other ...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- HTML !-->
+          <button class="select-button" type="button" role="button">
+            Apply selection
+          </button>
+
+          <div class="dashboard-block__map-key">
+            <h3>Note</h3>
+            <div class="map-key">
+              <div class="map-key-container">
+                <img
+                  class="map-key-icon"
+                  src="./assets/images/markerCluster.svg"
+                  alt="Blue circle with number of clustered Air quality stations"
+                />
+                <span>Air quality station cluster</span>
+              </div>
+              <div class="map-key-container">
+                <!-- <img
+                  class="map-key-icon"
+                  src="./assets/images/markerCluster.svg"
+                  alt="Blue marker Air quality stations"
+                /> -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                  <path
+                    stroke="#fff"
+                    fill="#524eee"
+                    d="M15.938 32S6 17.938 6 11.938C6 .125 15.938 0 15.938 0S26 .125 26 11.875C26 18.062 15.938 32 15.938 32zM16 6a4 4 0 100 8 4 4 0 000-8z"
+                  />
+                </svg>
+                <span>Air quality station</span>
+              </div>
+              <div class="map-key-container">
+                <img
+                  class="map-key-icon"
+                  src="./assets/images/markerPurpleAirCluster.svg"
+                  alt="Purple circle with number of clustered PurpleAir sensors"
+                />
+                <span>PurpleAir sensor cluster</span>
+              </div>
+              <div class="map-key-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                  <path
+                    stroke="#fff"
+                    fill="#aa44aa"
+                    d="M15.938 32S6 17.938 6 11.938C6 .125 15.938 0 15.938 0S26 .125 26 11.875C26 18.062 15.938 32 15.938 32zM16 6a4 4 0 100 8 4 4 0 000-8z"
+                  />
+                </svg>
+                <span>PurpleAir sensor</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="station-model">
-          <label for="station-network">Time scope</label><br />
-          <div class="select-box">
-            <select id="station-network">
-              <option value="Option 1">24 hour</option>
-              <option value="Option 2">48 hour</option>
-              <option value="Option 3">72 hour</option>
-            </select>
+
+        <div class="dashboard-block dashboard-block__map-container">
+          <div class="time-slider" id="slider-bar">
+            <h3>
+              Start time: 12 PM 1/1 Forecast time:
+              <label id="active-hour">12 PM 1/1 </label> End time: 12 PM 2/1
+            </h3>
+            <input
+              id="time-input"
+              class="slider"
+              type="range"
+              min="0"
+              max="23"
+              step="1"
+              value="0"
+            />
+            <div class="time-slider__controls">
+              <button
+                class="time-slider__control time-slider__control--backward"
+              ></button>
+              <button
+                class="time-slider__control time-slider__control--motion"
+              ></button>
+              <button
+                class="time-slider__control time-slider__control--forward"
+              ></button>
+            </div>
+            <script src="./timeslider.js"></script>
+          </div>
+
+          <div class="map" id="mapid">
+            <div id="sidebar"></div>
+            <script src="./ControlSidebar.js"></script>
+          </div>
+          <script type="module" src="./leaflet.js"></script>
+          <div class="map-air-quality-legend">
+            <div class="quality-color-items">
+              <div class="o3-icon good">Good</div>
+              <span class="quality-value">0 - 2</span>
+            </div>
+            <div class="quality-color-items">
+              <div class="o3-icon moderate">Moderate</div>
+              <span class="quality-value">2 - 3</span>
+            </div>
+            <div class="quality-color-items">
+              <div class="o3-icon unhealthy">Unhealthy</div>
+              <span class="quality-value">3 - 5</span>
+            </div>
+            <div class="quality-color-items">
+              <div class="o3-icon harmful">Harmful</div>
+              <span class="quality-value">> 5</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="map" id="mapid">
-        <div id="sidebar"></div>
-        <script src="./ControlSidebar.js"></script>
-      </div>
-      <script src="./leaflet.js"></script>
-
-      <div class="dashboard__right-container">
-        <div class="pollutant-selector">
+        <div class="dashboard-block dashboard-block__right-container">
+          <!-- <div class="pollutant-selector">
           <div class="radio-item">
             <input
               type="radio"
@@ -163,68 +306,56 @@
             />
             <label for="other">Other...</label>
           </div>
+        </div> -->
+
+          <div class="stations-menu">
+            <div class="station-description">
+              <h3>NSW AQ Station Forecast Ranking</h3>
+              <h4>Highest O3 level in the 24h forecast</h4>
+            </div>
+            <ul class="stations-header">
+              <li class="station-name">Stations</li>
+              <li class="station-time">Hour</li>
+              <li class="station-value">(ppb)</li>
+            </ul>
+            <!-- <div id="loading">Loading, please wait...</div> -->
+            <ul class="stations-info"></ul>
+            <script src="./menu.js"></script>
+          </div>
         </div>
+      </div>
 
-        <div class="stations-menu">
-          <ul class="stations-header">
-            <li class="station-name">Stations</li>
-            <li class="station-time">Hour</li>
-            <li class="station-value">(ppb)</li>
-          </ul>
-          <!-- <div id="loading">Loading, please wait...</div> -->
-          <ul class="stations-info"></ul>
-          <script src="./menu.js"></script>
+      <!-- <div class="map-air-quality-legend">
+        <div class="quality-color-items">
+          <div class="o3-icon good">Good</div>
+          <span class="quality-value">0 - 2</span>
         </div>
-      </div>
-    </div>
+        <div class="quality-color-items">
+          <div class="o3-icon moderate">Moderate</div>
+          <span class="quality-value">2 - 3</span>
+        </div>
+        <div class="quality-color-items">
+          <div class="o3-icon unhealthy">Unhealthy</div>
+          <span class="quality-value">3 - 5</span>
+        </div>
+        <div class="quality-color-items">
+          <div class="o3-icon harmful">Harmful</div>
+          <span class="quality-value">> 5</span>
+        </div>
+      </div> -->
 
-    <div class="map-air-quality-legend">
-      <div class="quality-color-items">
-        <div class="o3-icon">Ideal</div>
-        <span class="quality-value">0-10</span>
+      <div class="disclaimer">
+        <h2 class="disclaimer-flex">Disclaimer placeholder</h2>
+        <h2 class="disclaimer-flex">Stats</h2>
       </div>
-      <div class="quality-color-items">
-        <div class="o3-icon">Nice</div>
-        <span class="quality-value">10-20</span>
-      </div>
-      <div class="quality-color-items">
-        <div class="o3-icon">OK</div>
-        <span class="quality-value">20-30</span>
-      </div>
-      <div class="quality-color-items">
-        <div class="o3-icon">Bad</div>
-        <span class="quality-value">30-40</span>
-      </div>
-      <div class="quality-color-items">
-        <div class="o3-icon">Harmful</div>
-        <span class="quality-value">40-50</span>
-      </div>
-      <div class="quality-color-items">
-        <div class="o3-icon">Terrible</div>
-        <span class="quality-value">50-60</span>
-      </div>
-    </div>
 
-    <div class="time-slider" id="slider-bar">
-      <h2>Forecast hour: <label id="active-hour">11 AM 1/1</label></h2>
-      <input
-        id="time-input"
-        class="slider"
-        type="range"
-        min="0"
-        max="23"
-        step="1"
-        value="0"
-      />
-      <script src="./timeslider.js"></script>
-    </div>
-
-    <div class="disclaimer">
-      <h2 class="disclaimer-flex">Disclaimer placeholder</h2>
-      <h2 class="disclaimer-flex">Stats</h2>
-    </div>
-
-    <!-- <input type="range" min="0" max="100" value="50" id="slider" /> -->
+      <div
+        id="PurpleAirWidget_98465_module_AUAQI_conversion_C0_average_10_layer_standard"
+      >
+        Loading PurpleAir Widget...
+      </div>
+      <script src="https://www.purpleair.com/pa.widget.js?key=G8K4MJT94JUE1XWO&module=AUAQI&conversion=C0&average=10&layer=standard&container=PurpleAirWidget_98465_module_AUAQI_conversion_C0_average_10_layer_standard"></script>
+    </main>
 
     <footer class="global__footer">
       <div class="section__content">
