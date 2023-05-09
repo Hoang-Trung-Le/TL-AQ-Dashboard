@@ -5,13 +5,19 @@ const southWest = new L.LatLng(-37.50528021, 130.9992792),
   bounds = new L.LatLngBounds(southWest, northEast);
 
 let config = {
-  minZoom: 6,
+  minZoom: 5,
   maxZoom: 12,
   maxBounds: bounds,
   maxBoundsViscosity: 0.9,
 };
+var w = window.innerWidth;
+console.log(w);
 // Magnification with which the map will start
-const zoom = 6;
+var zoom;
+if (w < 740) {
+  zoom = 5;
+} else zoom = 6;
+console.log(zoom);
 // Coordinates of NSW geographic center
 const cenLat = -33.0;
 const cenLng = 147.032179;
@@ -243,14 +249,6 @@ function getPurpleAirInfo(markersInfo, featureGroups) {
       showCoverageOnHover: false,
     });
 
-    // Create a new panel for the new tab
-    // var sidebar = L.control
-    //   .sidebar("sidebar", {
-    //     autopan: true,
-    //     position: "right",
-    //   })
-    //   .addTo(map);
-
     const purpleairSensorsData = purpleairSensors.data;
 
     for (let i = 0; i < purpleairSensorsData.length; i++) {
@@ -454,7 +452,7 @@ async function generateChart(
       labels: historyXValues.concat(forecastXValues),
       datasets: [
         {
-          label: "History",
+          label: "Historical data",
           fill: false,
           backgroundColor: "rgba(255,0,255,1.0)",
           borderColor: "rgba(255,0,255,0.1)",
@@ -483,6 +481,12 @@ async function generateChart(
               xMax: 12,
               borderColor: "red",
               borderWidth: 2,
+              label: {
+                content: forecastYValues[0],
+                enabled: true,
+                position: "start",
+                backgroundColor: "rgba(0,0,0,0.6)",
+              },
             },
           },
         },
@@ -692,6 +696,25 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // };
 // L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
+// Define a function to fetch data from the API
+// function fetchData() {
+//   fetch('https://example.com/api/data')
+//     .then(response => response.json())
+//     .then(data => {
+//       // Do something with the data
+//       console.log(data);
+//     })
+//     .catch(error => {
+//       console.error(error);
+//     });
+// }
+
+// // Call the fetchData function initially when the page loads
+// fetchData();
+
+// // Call the fetchData function every 1 minute using setInterval()
+// setInterval(fetchData, 60000);
+
 // const fields = [
 //   "name",
 //   "location_type",
@@ -703,6 +726,21 @@ var nswBoundary = L.geoJSON(nswMapData, {
 //   "last_modified",
 //   "date_created",
 // ];
+
+// const sensorsID = {
+//   sensor1: {
+//     id: 180263,
+//   },
+//   sensor2: {
+//     id: 180261,
+//   },
+//   sensor3: {
+//     id: 180257,
+//   },
+//   sensor4: {
+//     id: 180259,
+//   },
+// };
 
 // const nwlng = 140.9992792;
 // const nwlat = -28.15701999;

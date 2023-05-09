@@ -137,7 +137,7 @@ body {
 }
 
 .banner h1 {
-  font-size: 35px;
+  font-size: clamp(1rem, 1rem + 2vw, 5rem);
   font-weight: bolder;
   color: #0052b1;
 }
@@ -146,8 +146,10 @@ body {
 
 .dashboard {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
+  flex-wrap: nowrap;
   background-color: #f9f9f9;
   width: 100%;
   height: 650px;
@@ -168,7 +170,6 @@ body {
   width: 60%;
   background-color: #f9f9f9;
   box-sizing: border-box;
-
   border-radius: 5px;
 }
 
@@ -180,13 +181,13 @@ body {
   align-items: center;
   text-align: center;
   margin: auto;
-  height: 12%;
+  height: 15%;
   width: 80%;
 }
 
 .slider {
   appearance: none;
-  width: 500px;
+  width: 80%;
   height: var(--slider-height);
   border-radius: 12px;
   background: #d3d3d3;
@@ -221,9 +222,9 @@ body {
 }
 
 .slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #04aa6d;
+  width: var(--slider-height);
+  height: var(--slider-height);
+  background: gray;
   cursor: pointer;
 }
 
@@ -280,17 +281,12 @@ body {
 .marker-title-container {
   position: sticky;
   top: 0;
-  height: 15%;
+  height: 16%;
   background-color: #fff;
   z-index: 1;
 }
 
-.hidden {
-  display: none;
-}
-
 .marker-title__tabs {
-  position: absolute;
   width: 100%;
   bottom: 0;
   display: flex;
@@ -319,14 +315,10 @@ body {
 
 .tab-content {
   background-color: white;
-  height: 85%;
+  height: 84%;
   overflow: hidden;
   overflow-y: scroll;
 }
-
-/* .tab-content::-webkit-scrollbar {
-  display: none; /* hide the scrollbar for webkit-based browsers 
-} */
 
 .tab-content .chart {
   position: relative;
@@ -342,6 +334,41 @@ body {
 .tab-content .stats {
   display: block;
 }
+
+.map-air-quality-legend {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 10px 0 10px 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.quality-color-items {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 150px;
+}
+
+.o3-icon {
+  width: 5rem;
+  height: 1.8rem;
+  border-radius: 0.9rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.quality-value {
+  margin-left: 10px;
+}
+
+/* DASHBOARD Selector Left */
 
 .dashboard-block__left-container {
   width: 15%;
@@ -413,7 +440,8 @@ select:focus {
 /* Ranking panel */
 
 .dashboard-block__right-container {
-  position: relative;
+  /* position: relative; */
+
   height: 100%;
   width: 20%;
   border-radius: 5px;
@@ -483,11 +511,23 @@ select:focus {
 
 .stations-menu {
   position: relative;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   width: 100%;
   border-radius: 5px;
-  box-sizing: border-box;
   overflow: hidden;
+}
+
+.station-description {
+  height: 15%;
+  width: 100%;
+  padding: 10px 10px 0;
+}
+
+.stations-ranking {
+  flex-grow: 2;
+  overflow: auto;
 }
 
 .stations-header {
@@ -495,7 +535,7 @@ select:focus {
   height: 30px;
   color: #fff;
   background-color: #524eee;
-  padding: 0 10px 0 3px;
+  padding: 0 10px;
   display: flex;
   flex-direction: row;
   list-style: none;
@@ -505,10 +545,7 @@ select:focus {
 }
 
 .stations-info {
-  /* position: relative; */
-  height: calc(100% - 100px);
-  /* padding: 10px;
-  margin: 5px; */
+  height: calc(100% - 30px);
   list-style: none;
   overflow: hidden;
   overflow-y: auto;
@@ -526,11 +563,10 @@ select:focus {
   height: 50px;
   background: linear-gradient(
     to top,
-    #00e400,
-    /* green - good air quality */ #ffff00,
-    /* yellow - moderate air quality */ #ff7e00,
-    /* orange - unhealthy for sensitive groups */ #ff0000
-      /* red - unhealthy air quality */
+    var(--good),
+    var(--moderate),
+    var(--unhealthy),
+    var(--harmful)
   );
   border-radius: 5px;
   border: 2px solid #f1f1f1;
@@ -569,11 +605,10 @@ select:focus {
   border-top: 16px solid #524eee;
   width: 120px;
   height: 120px;
-  -webkit-animation: spin 2s linear infinite; /* Safari */
+  -webkit-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
 }
 
-/* Safari */
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
@@ -720,38 +755,23 @@ hr {
   height: 34px;
 }
 
-.hidden {
-  display: none;
-}
+/* @media (740px <= width <= 1023px) {
+} */
 
-.map-air-quality-legend {
-  display: flex;
-  flex-direction: row;
-  margin: 10px 0 10px 0;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.quality-color-items {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 150px;
-}
-
-.o3-icon {
-  width: 5rem;
-  height: 1.8rem;
-  border-radius: 0.9rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.quality-value {
-  margin-left: 10px;
+@media (width < 740px) {
+  /* #nav > li {
+    display: block;
+    position: relative;
+  } */
+  .dashboard {
+    flex-direction: column;
+    height: auto;
+  }
+  .dashboard-block {
+    width: 100%;
+    height: 650px;
+  }
+  #mapid {
+    height: 50%;
+  }
 }
