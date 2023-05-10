@@ -762,7 +762,7 @@ hr {
 /* @media (740px <= width <= 1023px) {
 } */
 
-@media (width < 740px) {
+@media (max-width: 740px) {
   /* #nav > li {
     display: block;
     position: relative;
