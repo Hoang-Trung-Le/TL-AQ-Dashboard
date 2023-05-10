@@ -243,14 +243,6 @@ function getPurpleAirInfo(markersInfo, featureGroups) {
       showCoverageOnHover: false,
     });
 
-    // Create a new panel for the new tab
-    // var sidebar = L.control
-    //   .sidebar("sidebar", {
-    //     autopan: true,
-    //     position: "right",
-    //   })
-    //   .addTo(map);
-
     const purpleairSensorsData = purpleairSensors.data;
 
     for (let i = 0; i < purpleairSensorsData.length; i++) {
@@ -302,7 +294,7 @@ function generateMarkerContent(title, lat, lng) {
 	  		<p class="marker-latlng"><b>Latitude:</b> ${lat} | <b>Longitude:</b> ${lng}</p>
         <div class="marker-title__tabs">
           <h3 class="tab-item active">Forecast</h3>
-          <h3 class="tab-item">Historical data</h3>
+          <h3 class="tab-item">Relevant historical data</h3>
         </div>
       </div>
       
@@ -454,7 +446,7 @@ async function generateChart(
       labels: historyXValues.concat(forecastXValues),
       datasets: [
         {
-          label: "History",
+          label: "Historical data",
           fill: false,
           backgroundColor: "rgba(255,0,255,1.0)",
           borderColor: "rgba(255,0,255,0.1)",
@@ -466,10 +458,7 @@ async function generateChart(
           lineTension: 0,
           backgroundColor: "rgba(0,0,255,1.0)",
           borderColor: "rgba(0,0,255,0.1)",
-          data: forecastXValues.map((x, i) => ({
-            x: x,
-            y: forecastYValues[i],
-          })),
+          data: forecastXValues.map((x, i) => ({x: x, y: forecastYValues[i],})),
         },
       ],
     },
@@ -483,6 +472,12 @@ async function generateChart(
               xMax: 12,
               borderColor: "red",
               borderWidth: 2,
+              label: {
+                content: forecastYValues[0],
+                enabled: true,
+                position: "start",
+                backgroundColor: "rgba(0,0,0,0.6)",
+              },
             },
           },
         },
@@ -692,6 +687,26 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // };
 // L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
+// Define a function to fetch data from the API
+function fetchData() {
+  fetch('https://example.com/api/data')
+    .then(response => response.json())
+    .then(data => {
+      // Do something with the data
+      console.log(data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+// Call the fetchData function initially when the page loads
+fetchData();
+
+// Call the fetchData function every 1 minute using setInterval()
+setInterval(fetchData, 60000);
+
+
 // const fields = [
 //   "name",
 //   "location_type",
@@ -703,6 +718,21 @@ var nswBoundary = L.geoJSON(nswMapData, {
 //   "last_modified",
 //   "date_created",
 // ];
+
+const sensorsID = {
+  sensor1: {
+    id: 180263,
+  },
+  sensor2: {
+    id: 180261,
+  },
+  sensor3: {
+    id: 180257,
+  },
+  sensor4: {
+    id: 180259,
+  },
+};
 
 // const nwlng = 140.9992792;
 // const nwlat = -28.15701999;

@@ -16,12 +16,17 @@ document.getElementById("time-input").addEventListener("input", (event) => {
   document.getElementById("active-hour").innerText = hour12 + ampm + " 01/01";
 });
 
+// Manual slider adjustment
+const slider = document.querySelector(".slider");
+slider.oninput = function () {
+  updateChart(parseInt(this.value));
+};
+
+// PLAY/PAUSE button
+var isPlaying = false;
+var intervalTime = null;
 const playPauseButton = document.querySelector(".time-slider__control--motion");
-// console.log(playPauseButton);
-let isPlaying = false;
-let intervalTime = null;
 playPauseButton.addEventListener("click", function () {
-  
   if (!isPlaying) {
     playPauseButton.style.backgroundImage =
       'url("/assets/images/play-button.svg")';
@@ -37,14 +42,13 @@ playPauseButton.addEventListener("click", function () {
   isPlaying = !isPlaying;
 });
 
-const slider = document.querySelector(".slider");
-slider.oninput = function () {
-  // your slider oninput logic here
-  updateChart(parseInt(this.value));
-};
-
 const buttonForward = document.querySelector(".time-slider__control--forward");
 buttonForward.addEventListener("click", function () {
+  // if (slider.value == slider.max) {
+  //   console.log("triggered");
+  //   slider.value = 3 - 1;
+  //   console.log(slider.value);
+  // }
   incrementSliderValue("forward");
 });
 
@@ -57,21 +61,20 @@ buttonBackward.addEventListener("click", function () {
 
 // Function to increment the slider value and update the chart
 function incrementSliderValue(motion) {
-  // get current value of the range slider
   const currentValue = parseInt(slider.value);
-
-  // increment the value by 1 and set it back to the range slider
-  if (motion == "forward") slider.value = currentValue + 1;
-  else if (motion == "backward") slider.value = currentValue - 1;
-
-  // call the updateChart function
+  if (motion == "forward") {
+    if (slider.value == slider.max) slider.value = 0;
+    else slider.value = currentValue + 1;
+  } else if (motion == "backward") slider.value = currentValue - 1;
   updateChart(parseInt(slider.value));
+  // if (slider.value == slider.max) slider.value = slider.min;
 }
 
 function autoIncreSliderValue() {
   intervalTime = setInterval(function () {
     const currentValue = parseInt(slider.value);
-    slider.value = currentValue + 1;
+    if (slider.value == slider.max) slider.value = 0;
+    else slider.value = currentValue + 1;
     updateChart(parseInt(slider.value));
   }, 1000);
 }
@@ -86,13 +89,19 @@ function updateChart(sliderValue) {
     sliderValue + 12;
   forecastChart.options.plugins.annotation.annotations.vertLine.xMax =
     sliderValue + 12;
+  const y = forecastChart.data.datasets[1].data[sliderValue].y;
+  // use the y value to update the label content of the vertical line annotation
+  forecastChart.options.plugins.annotation.annotations.vertLine.label.content =
+    y;
   forecastChart.update();
   if (isPlaying && sliderValue == slider.max) {
-  playPauseButton.style.backgroundImage =
+    playPauseButton.style.backgroundImage =
       'url("/assets/images/pause-button.svg")';
     if (intervalTime) {
       clearInterval(intervalTime);
       intervalTime = null;
     }
+    isPlaying = false;
+    // slider.value = slider.min;
   }
 }
