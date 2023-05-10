@@ -137,7 +137,7 @@ body {
 }
 
 .banner h1 {
-  font-size: 35px;
+  font-size: clamp(1rem, 1rem + 2vw, 5rem);
   font-weight: bolder;
   color: #0052b1;
 }
@@ -146,9 +146,11 @@ body {
 
 .dashboard {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
   flex-wrap: wrap;
+  flex-wrap: nowrap;
   background-color: #f9f9f9;
   width: 100%;
   height: 650px;
@@ -286,7 +288,6 @@ body {
 }
 
 .marker-title__tabs {
-  position: absolute;
   width: 100%;
   bottom: 0;
   display: flex;
@@ -338,6 +339,7 @@ body {
 .map-air-quality-legend {
   display: flex;
   flex-direction: row;
+  width: 100%;
   margin: 10px 0 10px 0;
   align-items: center;
   justify-content: center;
@@ -757,3 +759,23 @@ hr {
 /* .hidden {
   display: none;
 } */
+/* @media (740px <= width <= 1023px) {
+} */
+
+@media (width < 740px) {
+  /* #nav > li {
+    display: block;
+    position: relative;
+  } */
+  .dashboard {
+    flex-direction: column;
+    height: auto;
+  }
+  .dashboard-block {
+    width: 100%;
+    height: 650px;
+  }
+  #mapid {
+    height: 50%;
+  }
+}

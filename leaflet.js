@@ -5,13 +5,19 @@ const southWest = new L.LatLng(-37.50528021, 130.9992792),
   bounds = new L.LatLngBounds(southWest, northEast);
 
 let config = {
-  minZoom: 6,
+  minZoom: 5,
   maxZoom: 12,
   maxBounds: bounds,
   maxBoundsViscosity: 0.9,
 };
+var w = window.innerWidth;
+console.log(w);
 // Magnification with which the map will start
-const zoom = 6;
+var zoom;
+if (w < 740) {
+  zoom = 5;
+} else zoom = 6;
+console.log(zoom);
 // Coordinates of NSW geographic center
 const cenLat = -33.0;
 const cenLng = 147.032179;
@@ -688,6 +694,7 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
 // Define a function to fetch data from the API
+<<<<<<< HEAD
 function fetchData() {
   fetch('https://example.com/api/data')
     .then(response => response.json())
@@ -706,6 +713,25 @@ fetchData();
 // Call the fetchData function every 1 minute using setInterval()
 setInterval(fetchData, 60000);
 
+=======
+// function fetchData() {
+//   fetch('https://example.com/api/data')
+//     .then(response => response.json())
+//     .then(data => {
+//       // Do something with the data
+//       console.log(data);
+//     })
+//     .catch(error => {
+//       console.error(error);
+//     });
+// }
+
+// // Call the fetchData function initially when the page loads
+// fetchData();
+
+// // Call the fetchData function every 1 minute using setInterval()
+// setInterval(fetchData, 60000);
+>>>>>>> 0c6a0bbbbc2009ead5d2056a5466b72622fe4c5a
 
 // const fields = [
 //   "name",
@@ -719,6 +745,7 @@ setInterval(fetchData, 60000);
 //   "date_created",
 // ];
 
+<<<<<<< HEAD
 const sensorsID = {
   sensor1: {
     id: 180263,
@@ -733,6 +760,22 @@ const sensorsID = {
     id: 180259,
   },
 };
+=======
+// const sensorsID = {
+//   sensor1: {
+//     id: 180263,
+//   },
+//   sensor2: {
+//     id: 180261,
+//   },
+//   sensor3: {
+//     id: 180257,
+//   },
+//   sensor4: {
+//     id: 180259,
+//   },
+// };
+>>>>>>> 0c6a0bbbbc2009ead5d2056a5466b72622fe4c5a
 
 // const nwlng = 140.9992792;
 // const nwlat = -28.15701999;
