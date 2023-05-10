@@ -694,7 +694,7 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
 // Define a function to fetch data from the API
-<<<<<<< HEAD
+
 function fetchData() {
   fetch('https://example.com/api/data')
     .then(response => response.json())
@@ -713,7 +713,7 @@ fetchData();
 // Call the fetchData function every 1 minute using setInterval()
 setInterval(fetchData, 60000);
 
-=======
+
 // function fetchData() {
 //   fetch('https://example.com/api/data')
 //     .then(response => response.json())
@@ -731,7 +731,6 @@ setInterval(fetchData, 60000);
 
 // // Call the fetchData function every 1 minute using setInterval()
 // setInterval(fetchData, 60000);
->>>>>>> 0c6a0bbbbc2009ead5d2056a5466b72622fe4c5a
 
 // const fields = [
 //   "name",
@@ -745,7 +744,7 @@ setInterval(fetchData, 60000);
 //   "date_created",
 // ];
 
-<<<<<<< HEAD
+
 const sensorsID = {
   sensor1: {
     id: 180263,
@@ -760,7 +759,7 @@ const sensorsID = {
     id: 180259,
   },
 };
-=======
+
 // const sensorsID = {
 //   sensor1: {
 //     id: 180263,
@@ -775,7 +774,6 @@ const sensorsID = {
 //     id: 180259,
 //   },
 // };
->>>>>>> 0c6a0bbbbc2009ead5d2056a5466b72622fe4c5a
 
 // const nwlng = 140.9992792;
 // const nwlat = -28.15701999;
