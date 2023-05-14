@@ -149,7 +149,6 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  flex-wrap: wrap;
   flex-wrap: nowrap;
   background-color: #f9f9f9;
   width: 100%;
@@ -756,13 +755,10 @@ hr {
   height: 34px;
 }
 
-/* .hidden {
-  display: none;
-} */
 /* @media (740px <= width <= 1023px) {
 } */
 
-@media (max-width: 740px) {
+@media (width < 740px) {
   /* #nav > li {
     display: block;
     position: relative;
@@ -770,7 +766,6 @@ hr {
   .dashboard {
     flex-direction: column;
     height: auto;
-    gap: 10px
   }
   .dashboard-block {
     width: 100%;

@@ -300,7 +300,7 @@ function generateMarkerContent(title, lat, lng) {
 	  		<p class="marker-latlng"><b>Latitude:</b> ${lat} | <b>Longitude:</b> ${lng}</p>
         <div class="marker-title__tabs">
           <h3 class="tab-item active">Forecast</h3>
-          <h3 class="tab-item">Relevant historical data</h3>
+          <h3 class="tab-item">Historical data</h3>
         </div>
       </div>
       
@@ -697,35 +697,6 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
 // Define a function to fetch data from the API
-
-// function fetchData() {
-//   fetch('https://example.com/api/data')
-//     .then(response => response.json())
-//     .then(data => {
-//       // Do something with the data
-//       console.log(data);
-//     })
-//     .catch(error => {
-//       console.error(error);
-//     });
-// }
-
-// Call the fetchData function initially when the page loads
-// fetchData();
-
-// Call the fetchData function every 1 minute using setInterval()
-// setInterval(fetchData, 60000);
-// var ind = 1;
-// function change() {
-//   var demo = document.getElementById("stat");
-//   console.log(demo);
-//   demo.innerHTML = (ind + 1) +"";
-//   ind++;
-//   console.log(demo.innerHTML);
-// }
-// change();
-// setInterval(change, 1000);
-
 // function fetchData() {
 //   fetch('https://example.com/api/data')
 //     .then(response => response.json())
@@ -755,21 +726,6 @@ var nswBoundary = L.geoJSON(nswMapData, {
 //   "last_modified",
 //   "date_created",
 // ];
-
-// const sensorsID = {
-//   sensor1: {
-//     id: 180263,
-//   },
-//   sensor2: {
-//     id: 180261,
-//   },
-//   sensor3: {
-//     id: 180257,
-//   },
-//   sensor4: {
-//     id: 180259,
-//   },
-// };
 
 // const sensorsID = {
 //   sensor1: {
