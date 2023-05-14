@@ -25,15 +25,15 @@ slider.oninput = function () {
 // PLAY/PAUSE button
 var isPlaying = false;
 var intervalTime = null;
-const playPauseButton = document.querySelector(".time-slider__control--motion");
+const playPauseButton = document.querySelector(
+  ".time-slider__control--motion img"
+);
 playPauseButton.addEventListener("click", function () {
   if (!isPlaying) {
-    playPauseButton.style.backgroundImage =
-      'url("/assets/images/play-button.svg")';
+    playPauseButton.src = "./assets/images/play-button.svg";
     autoIncreSliderValue();
   } else {
-    playPauseButton.style.backgroundImage =
-      'url("/assets/images/pause-button.svg")';
+    playPauseButton.src = "./assets/images/pause-button.svg";
     if (intervalTime) {
       clearInterval(intervalTime);
       intervalTime = null;
@@ -95,8 +95,7 @@ function updateChart(sliderValue) {
     y;
   forecastChart.update();
   if (isPlaying && sliderValue == slider.max) {
-    playPauseButton.style.backgroundImage =
-      'url("/assets/images/pause-button.svg")';
+    playPauseButton.src = "./assets/images/pause-button.svg";
     if (intervalTime) {
       clearInterval(intervalTime);
       intervalTime = null;
