@@ -254,19 +254,19 @@ body {
   scale: -1;
 }
 
-.time-slider__control--backward {
-  background-image: url("/assets/images/step.svg");
+/* .time-slider__control--backward {
+  background-image: url("./assets/images/step.svg");
   scale: -1;
-}
+} */
 
 .time-slider__control--motion {
-  background-image: url("/assets/images/pause-button.svg");
+  /* background-image: url("./assets/images/pause-button.svg"); */
   transition: background-image 0.3s ease-in-out;
 }
 
-.time-slider__control--forward {
+/* .time-slider__control--forward {
   background-image: url("/assets/images/step.svg");
-}
+} */
 
 /* Map */
 #mapid {
