@@ -245,14 +245,20 @@ body {
   opacity: 1;
 }
 
-.time-slider__control--backward {
+/* .time-slider__control--backward {
   background-image: url("/assets/images/step.svg");
   scale: -1;
+} */
+
+.time-slider__control img {
+  transform: scaleX(-1);
+  height: 100%;
+  width: 100%;
 }
 
-.time-slider__control--backward:hover {
+/* .time-slider__control--backward:hover {
   content: url('/assets/images/step.svg');
-}
+} */
 
 .time-slider__control--motion {
   background-image: url("/assets/images/pause-button.svg");
