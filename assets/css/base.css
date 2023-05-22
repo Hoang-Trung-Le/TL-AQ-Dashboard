@@ -1,8 +1,9 @@
 :root {
-  --good: #00e400;
-  --moderate: #ffff00;
-  --unhealthy: #ff7e00;
-  --harmful: #ff0000;
+  --good: #42a93c;
+  --fair: #eec900;
+  --poor: #e47400;
+  --very-poor: #ba0029;
+  --ext-poor: #590019;
   --default-header-color: #002664;
   --slider-height: 15px;
 }

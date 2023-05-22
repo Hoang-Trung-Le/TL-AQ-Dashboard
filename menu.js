@@ -1,4 +1,6 @@
 window.addEventListener("DOMContentLoaded", (event) => {
+  const container = document.querySelector(".stations-info");
+  container.innerHTML = `<div class="loader"></div>`;
   a("OZONE"); // or whichever pollutant you want to use as default
 });
 
@@ -126,7 +128,7 @@ async function getData(pollutant, location, csvFilePath) {
     parseFloat(row["forecast_hours"])
   );
   const date = parsedData.map((row) =>
-    new Date(row["datetime"]).toLocaleString(undefined, {
+    new Date(row["datetime"]).toLocaleString("en-AU", {
       hour: "2-digit",
       minute: "2-digit",
     })
@@ -153,11 +155,11 @@ function displayStationNames(stationNames) {
     if (stationValue <= 2) {
       classList = "good";
     } else if (stationValue <= 3) {
-      classList = "moderate";
+      classList = "fair";
     } else if (stationValue <= 5) {
-      classList = "unhealthy";
+      classList = "poor";
     } else {
-      classList = "harmful";
+      classList = "very-poor";
     }
 
     html += `<li class="station-item">

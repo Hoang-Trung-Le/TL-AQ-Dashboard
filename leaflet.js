@@ -275,7 +275,7 @@ function getPurpleAirInfo(markersInfo, featureGroups) {
           purpleairMarker.setIcon(colorMarker("selected"));
           sidebar
             .setContent(
-              generateMarkerContent(
+              generateMarkerContentPA(
                 purpleairSensorName,
                 purpleairSensorLatitude,
                 purpleairSensorLongitude
@@ -322,6 +322,144 @@ function generateMarkerContent(title, lat, lng) {
       </div>
 		</div>
 	`;
+
+  setTimeout(() => {
+    const canvas1 = document.getElementById(`marker-chart-${title}`);
+    const canvas2 = document.getElementById(`NO2-chart-${title}`);
+    const canvas3 = document.getElementById(`WDR-chart-${title}`);
+    const canvas4 = document.getElementById(`WSP-chart-${title}`);
+
+    const ctx1 = canvas1.getContext("2d");
+    const ctx2 = canvas2.getContext("2d");
+    const ctx3 = canvas3.getContext("2d");
+    const ctx4 = canvas4.getContext("2d");
+
+    if (canvas1) {
+      getOzoneDataForLocation(title, "./AQSs_Info/forecast1.csv").then(
+        (result) => {
+          // extract data from forecastData
+          const forecastXValues = result.forecastData.map((d) => d.date);
+          const forecastYValues = result.forecastData.map((d) => d.ozone);
+          // extract data from historyData
+          const historyXValues = result.historyData.map((d) => d.date);
+          const historyYValues = result.historyData.map((d) => d.ozone);
+          // console.log(forecastXValues.map((x, i) => ({ x: x, y: forecastYValues[i] })));
+          // console.log(historyXValues.map((x, i) => ({ x: x, y: historyYValues[i] })));
+
+          const stationColorIndex = document.querySelector(
+            ".marker-title-container"
+          );
+          if (forecastYValues[0] <= 2) {
+            stationColorIndex.classList.add("good");
+          } else if (forecastYValues[0] <= 3) {
+            stationColorIndex.classList.add("fair");
+          } else if (forecastYValues[0] <= 5) {
+            stationColorIndex.classList.add("poor");
+          } else {
+            stationColorIndex.classList.add("very-poor");
+          }
+
+          // generate chart for both canvas elements
+          generateChart(
+            ctx1,
+            forecastXValues,
+            forecastYValues,
+            historyXValues,
+            historyYValues
+          );
+        }
+      );
+    }
+
+    let tabs = document.querySelectorAll(".marker-title__tabs h3");
+    let tabContents = document.querySelectorAll(".chart");
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        tabContents.forEach((content) => {
+          content.classList.remove("active");
+        });
+        tabs.forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        // tabContents[index].classList.add('active');
+        // tabs[index].classList.add('active');
+
+        if (index === 0) {
+          tabContents[index].classList.add("active");
+          tabs[index].classList.add("active");
+        } else {
+          tabContents[index].classList.add("active");
+          tabs[index].classList.add("active");
+          getHistoryDataForLocation(
+            title,
+            "NO2",
+            "./AQSs_Info/forecast1.csv"
+          ).then((result) => {
+            // extract data from historyData
+            const historyXValues = result.map((d) => d.date);
+            console.log(historyXValues);
+            const historyYValues = result.map((d) => d.NO2);
+            console.log(historyYValues);
+
+            // generate chart for both canvas elements
+            generateChart1(ctx2, "NO2", historyXValues, historyYValues);
+          });
+          getHistoryDataForLocation(
+            title,
+            "WDR",
+            "./AQSs_Info/forecast1.csv"
+          ).then((result) => {
+            // extract data from historyData
+            const historyXValues = result.map((d) => d.date);
+            console.log(historyXValues);
+            const historyYValues = result.map((d) => d.NO2);
+            console.log(historyYValues);
+
+            // generate chart for both canvas elements
+            generateChart1(ctx3, "WDR", historyXValues, historyYValues);
+          });
+          getHistoryDataForLocation(
+            title,
+            "WSP",
+            "./AQSs_Info/forecast1.csv"
+          ).then((result) => {
+            // extract data from historyData
+            const historyXValues = result.map((d) => d.date);
+            console.log(historyXValues);
+            const historyYValues = result.map((d) => d.NO2);
+            console.log(historyYValues);
+
+            // generate chart for both canvas elements
+            generateChart1(ctx4, "WSP", historyXValues, historyYValues);
+          });
+        }
+      });
+    });
+  }, 0);
+  return content;
+}
+
+function generateMarkerContentPA(title, lat, lng) {
+  const content = `
+    <div class="marker-content">
+      <div class="marker-title-container">
+        <h2 class="marker-title">${title} Station</h2>
+        <p class="marker-latlng">
+          <b>Latitude:</b> ${lat} | <b>Longitude:</b> ${lng}
+        </p>
+      </div>
+
+      <div class="tab-content">
+        <div class="chart active">
+          <div class="stats">
+            <h4>Temperature: </h4>
+            <h4>Humidity: </h4>
+            <h4>Reliability: </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 
   setTimeout(() => {
     const canvas1 = document.getElementById(`marker-chart-${title}`);
@@ -683,8 +821,9 @@ var nswBoundary = L.geoJSON(nswMapData, {
   style: function (geoJsonFeature) {
     return {
       color: "blue",
-      opacity: 0.5,
+      opacity: 0.8,
       fillOpacity: 0,
+      weight: 3,
     };
   },
 }).addTo(map);
@@ -741,8 +880,8 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // // Call the fetchData function initially when the page loads
 // fetchData();
 
-// // Call the fetchData function every 1 minute using setInterval()
-// setInterval(fetchData, 60000);
+// // Call the fetchData function every 2 minutes using setInterval()
+// setInterval(fetchData, 120000);
 
 // const fields = [
 //   "name",

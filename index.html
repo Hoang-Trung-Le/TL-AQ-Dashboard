@@ -62,6 +62,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script>
     <!-- <script src="./menu.js"></script> -->
+    <script src="./legend.js"></script>
   </head>
 
   <body>
@@ -269,23 +270,28 @@
           </div>
           <script type="module" src="./leaflet.js"></script>
           <div class="map-air-quality-legend">
-            <div class="quality-color-items">
-              <div class="o3-icon good">Good</div>
-              <span class="quality-value">0 - 2</span>
+            <!-- <div class="aq-categories">
+              <div class="aq-category good">Good</div>
+              <span class="quality-value">&lt 5.4</span>
             </div>
-            <div class="quality-color-items">
-              <div class="o3-icon moderate">Moderate</div>
-              <span class="quality-value">2 - 3</span>
+            <div class="aq-categories">
+              <div class="aq-category fair">Fair</div>
+              <span class="quality-value">5.4 - 8.0</span>
             </div>
-            <div class="quality-color-items">
-              <div class="o3-icon unhealthy">Unhealthy</div>
-              <span class="quality-value">3 - 5</span>
+            <div class="aq-categories">
+              <div class="aq-category poor">Poor</div>
+              <span class="quality-value">8.0 - 12.0</span>
             </div>
-            <div class="quality-color-items">
-              <div class="o3-icon harmful">Harmful</div>
-              <span class="quality-value">> 5</span>
+            <div class="aq-categories">
+              <div class="aq-category very-poor">Very poor</div>
+              <span class="quality-value">12.0 - 16.0</span>
             </div>
+            <div class="aq-categories">
+              <div class="aq-category ext-poor">Ext poor</div>
+              <span class="quality-value">> 16.0</span>
+            </div> -->
           </div>
+          <!-- <script src="./legend.js"></script> -->
         </div>
 
         <div class="dashboard-block dashboard-block__right-container">
@@ -331,7 +337,6 @@
                 <li class="station-time">Hour</li>
                 <li class="station-value">(ppb)</li>
               </ul>
-              <!-- <div id="loading">Loading, please wait...</div> -->
               <ul class="stations-info"></ul>
             </div>
             <script src="./menu.js"></script>
@@ -339,10 +344,10 @@
         </div>
       </div>
 
-      <div class="disclaimer">
+      <!-- <div class="disclaimer">
         <h2 class="disclaimer-flex">Disclaimer placeholder</h2>
         <h2 id="stat" class="disclaimer-flex">Stats</h2>
-      </div>
+      </div> -->
     </main>
 
     <footer class="global__footer">
@@ -358,7 +363,7 @@
         </div>
         <hr />
         <div class="global__footer__meta">
-          <span>© 2023 NSW Government</span>
+          <span>© 2023 UTS SEDE Showcase</span>
           <nav
             class="nav nav--inline"
             role="navigation"
