@@ -2,6 +2,7 @@
 const airPollutants = [
   {
     name: "OZONE",
+    unit: "ppb",
     categories: [
       { label: "Good", range: "< 5.4" },
       { label: "Fair", range: "5.4 - 8.0" },
@@ -12,6 +13,7 @@ const airPollutants = [
   },
   {
     name: "PM25",
+    unit: "ppm",
     categories: [
       { label: "Good", range: "< 25" },
       { label: "Fair", range: "25 - 50" },

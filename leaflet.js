@@ -439,8 +439,49 @@ function generateMarkerContent(title, lat, lng) {
   return content;
 }
 
+const nwlng = 140.9992792;
+const nwlat = -28.15701999;
+const selng = 153.638889;
+const selat = -37.50528021;
+
+const fields = [
+  "name",
+  "location_type",
+  "latitude",
+  "longitude",
+  "uptime",
+  "pa_latency",
+  "last_seen",
+  "last_modified",
+  "date_created",
+];
+
+const url = `https://api.purpleair.com/v1/sensors?fields=${fields.join(
+  "%2C%20"
+)}&nwlng=${nwlng}&nwlat=${nwlat}&selng=${selng}&selat=${selat}`;
+
+function fetchData() {
+  fetch(url, {
+    method: "GET",
+    headers: {
+      "X-API-Key": "D80F3AFD-DDAD-11ED-BD21-42010A800008",
+    },
+  })
+    .then((responsePurpleAir) => responsePurpleAir.json())
+    .then((dataPurpleAir) => {
+      console.log(dataPurpleAir);
+    })
+    .catch((error) => console.error(error));
+}
+
+// Call the fetchData function initially when the page loads
+fetchData();
+
+// Call the fetchData function every 2 minutes using setInterval()
+setInterval(fetchData, 120000);
+
 function generateMarkerContentPA(title, lat, lng) {
-  const content = `
+  const content = html`
     <div class="marker-content">
       <div class="marker-title-container">
         <h2 class="marker-title">${title} Station</h2>
@@ -785,37 +826,6 @@ async function getHistoryDataForLocation(location, parameter, csvFilePath) {
   return historyData;
 }
 
-// let largestLongitude = Infinity;
-// let largestLatitude = Infinity;
-
-// for (let i = 0; i < nswMapData.features.length; i++) {
-//   const feature = nswMapData.features[i];
-//   const coords = feature.geometry.coordinates;
-
-//   for (let j = 0; j < coords.length; j++) {
-//     const polygonCoords = coords[j];
-
-//     for (let k = 0; k < polygonCoords.length; k++) {
-//       const pointCoords = polygonCoords[k];
-
-//       for (let l = 0; l < pointCoords.length; l++) {
-//         const longitude = pointCoords[l][0];
-//         const latitude = pointCoords[l][1];
-
-//         if (longitude < largestLongitude) {
-//           largestLongitude = longitude;
-//         }
-
-//         if (latitude < largestLatitude) {
-//           largestLatitude = latitude;
-//         }
-//       }
-//     }
-//   }
-// }
-
-// console.log("Smallest longitude:", largestLongitude);
-// console.log("Smallest latitude:", largestLatitude);
 
 var nswBoundary = L.geoJSON(nswMapData, {
   style: function (geoJsonFeature) {
@@ -837,23 +847,12 @@ var nswBoundary = L.geoJSON(nswMapData, {
 
 // Define a function to fetch data from the API
 
-// function fetchData() {
-//   fetch('https://example.com/api/data')
-//     .then(response => response.json())
-//     .then(data => {
-//       // Do something with the data
-//       console.log(data);
-//     })
-//     .catch(error => {
-//       console.error(error);
-//     });
-// }
-
 // Call the fetchData function initially when the page loads
 // fetchData();
 
 // Call the fetchData function every 1 minute using setInterval()
 // setInterval(fetchData, 60000);
+
 // var ind = 1;
 // function change() {
 //   var demo = document.getElementById("stat");
@@ -865,81 +864,20 @@ var nswBoundary = L.geoJSON(nswMapData, {
 // change();
 // setInterval(change, 1000);
 
-// function fetchData() {
-//   fetch('https://example.com/api/data')
-//     .then(response => response.json())
-//     .then(data => {
-//       // Do something with the data
-//       console.log(data);
-//     })
-//     .catch(error => {
-//       console.error(error);
-//     });
-// }
 
-// // Call the fetchData function initially when the page loads
-// fetchData();
 
-// // Call the fetchData function every 2 minutes using setInterval()
-// setInterval(fetchData, 120000);
 
-// const fields = [
-//   "name",
-//   "location_type",
-//   "latitude",
-//   "longitude",
-//   "uptime",
-//   "pa_latency",
-//   "last_seen",
-//   "last_modified",
-//   "date_created",
-// ];
-
-// const sensorsID = {
-//   sensor1: {
-//     id: 180263,
-//   },
-//   sensor2: {
-//     id: 180261,
-//   },
-//   sensor3: {
-//     id: 180257,
-//   },
-//   sensor4: {
-//     id: 180259,
-//   },
-// };
-
-// const sensorsID = {
-//   sensor1: {
-//     id: 180263,
-//   },
-//   sensor2: {
-//     id: 180261,
-//   },
-//   sensor3: {
-//     id: 180257,
-//   },
-//   sensor4: {
-//     id: 180259,
-//   },
-// };
-
-// const nwlng = 140.9992792;
-// const nwlat = -28.15701999;
-// const selng = 153.638889;
-// const selat = -37.50528021;
-
-// const url = `https://api.purpleair.com/v1/sensors?fields=${fields.join(
-//   "%2C%20"
-// )}&nwlng=${nwlng}&nwlat=${nwlat}&selng=${selng}&selat=${selat}`;
-
-// fetch(url, {
-//   method: "GET",
-//   headers: {
-//     "X-API-Key": "D80F3AFD-DDAD-11ED-BD21-42010A800008",
-//   },
-// })
-//   .then((responsePurpleAir) => responsePurpleAir.json())
-//   .then((dataPurpleAir) => console.log(dataPurpleAir))
-//   .catch((error) => console.error(error));
+const sensorsID = {
+  sensor1: {
+    id: 180263,
+  },
+  sensor2: {
+    id: 180261,
+  },
+  sensor3: {
+    id: 180257,
+  },
+  sensor4: {
+    id: 180259,
+  },
+};
