@@ -1,7 +1,7 @@
 window.addEventListener("DOMContentLoaded", (event) => {
   const container = document.querySelector(".stations-info");
   container.innerHTML = `<div class="loader"></div>`;
-  a("OZONE"); // or whichever pollutant you want to use as default
+  a("OZONE", 24); // or whichever pollutant you want to use as default
 });
 
 b();
@@ -41,6 +41,12 @@ async function b() {
     console.log(pollutantSelection);
     selectedPollutant = pollutantSelection.value;
     console.log(selectedPollutant);
+
+    var timeSelection = document.querySelector("#select-time");
+    console.log(timeSelection);
+    selectedTime = timeSelection.value;
+    console.log(selectedTime);
+
     stationsInfo = document.querySelectorAll(".stations-info");
     console.log(stationsInfo);
     stationsInfo.forEach((container) => {
@@ -50,11 +56,11 @@ async function b() {
     });
     const container = document.querySelector(".stations-info");
     container.innerHTML = `<div class="loader"></div>`;
-    a(selectedPollutant);
+    a(selectedPollutant, selectedTime);
   });
 }
 
-function a(pollutant) {
+function a(pollutant, time) {
   $.get("./AQSs_Info/e.csv", function (csvString) {
     // Use PapaParse to convert string to array of objects
     var data = Papa.parse(csvString, {
@@ -70,7 +76,7 @@ function a(pollutant) {
         // markersInfo.push({ title: data[i].title, o3Value: data[i]["O3_Value"] });
         stationNames.push(data[i].title);
         // console.log(stationNames[i]);
-        getData(pollutant, stationNames[i], "./AQSs_Info/forecast1.csv").then(
+        getData(pollutant, stationNames[i], `./AQSs_Info/forecast_${time}.csv`).then(
           (result) => {
             // extract data from forecastData
             const forecastXValues = result.map((d) => d.date);
@@ -152,14 +158,16 @@ function displayStationNames(stationNames) {
     const stationValue = stationNames[i].o3Value.toFixed(2);
 
     let classList = "";
-    if (stationValue <= 2) {
+    if (stationValue <= 5.4) {
       classList = "good";
-    } else if (stationValue <= 3) {
+    } else if (stationValue > 5.4 && stationValue < 8.0) {
       classList = "fair";
-    } else if (stationValue <= 5) {
+    } else if (stationValue > 8.0 && stationValue < 12.0) {
       classList = "poor";
-    } else {
+    } else if (stationValue > 12.0 && stationValue < 16.0) {
       classList = "very-poor";
+    } else if (stationValue > 16.0) {
+      classList = "ext-poor";
     }
 
     html += `<li class="station-item">

@@ -363,40 +363,52 @@ function generateMarkerContent(title, lat, lng) {
     const ctx4 = canvas4.getContext("2d");
 
     if (canvas1) {
-      getOzoneDataForLocation(title, "./AQSs_Info/forecast1.csv").then(
-        (result) => {
-          // extract data from forecastData
-          const forecastXValues = result.forecastData.map((d) => d.date);
-          const forecastYValues = result.forecastData.map((d) => d.ozone);
-          // extract data from historyData
-          const historyXValues = result.historyData.map((d) => d.date);
-          const historyYValues = result.historyData.map((d) => d.ozone);
-          // console.log(forecastXValues.map((x, i) => ({ x: x, y: forecastYValues[i] })));
-          // console.log(historyXValues.map((x, i) => ({ x: x, y: historyYValues[i] })));
+      var timeSelection = document.querySelector("#select-time");
+      console.log(timeSelection);
+      selectedTime = timeSelection.value;
+      console.log(selectedTime);
 
-          const stationColorIndex = document.querySelector(
-            ".marker-title-container"
-          );
-          if (forecastYValues[0] <= 2) {
-            stationColorIndex.classList.add("good");
-          } else if (forecastYValues[0] <= 3) {
-            stationColorIndex.classList.add("fair");
-          } else if (forecastYValues[0] <= 5) {
-            stationColorIndex.classList.add("poor");
-          } else {
-            stationColorIndex.classList.add("very-poor");
-          }
+      var pollutantSelection = document.querySelector("#select-pollutant");
+      console.log(pollutantSelection);
+      selectedPollutant = pollutantSelection.value;
+      console.log(selectedPollutant);
 
-          // generate chart for both canvas elements
-          generateChart(
-            ctx1,
-            forecastXValues,
-            forecastYValues,
-            historyXValues,
-            historyYValues
-          );
+      getOzoneDataForLocation(
+        title,
+        selectedPollutant,
+        `./AQSs_Info/forecast_${selectedTime}.csv`
+      ).then((result) => {
+        // extract data from forecastData
+        const forecastXValues = result.forecastData.map((d) => d.date);
+        const forecastYValues = result.forecastData.map((d) => d.ozone);
+        // extract data from historyData
+        const historyXValues = result.historyData.map((d) => d.date);
+        const historyYValues = result.historyData.map((d) => d.ozone);
+        // console.log(forecastXValues.map((x, i) => ({ x: x, y: forecastYValues[i] })));
+        // console.log(historyXValues.map((x, i) => ({ x: x, y: historyYValues[i] })));
+
+        const stationColorIndex = document.querySelector(
+          ".marker-title-container"
+        );
+        if (forecastYValues[0] <= 2) {
+          stationColorIndex.classList.add("good");
+        } else if (forecastYValues[0] <= 3) {
+          stationColorIndex.classList.add("fair");
+        } else if (forecastYValues[0] <= 5) {
+          stationColorIndex.classList.add("poor");
+        } else {
+          stationColorIndex.classList.add("very-poor");
         }
-      );
+
+        // generate chart for both canvas elements
+        generateChart(
+          ctx1,
+          forecastXValues,
+          forecastYValues,
+          historyXValues,
+          historyYValues
+        );
+      });
     }
 
     let tabs = document.querySelectorAll(".marker-title__tabs h3");
@@ -717,12 +729,12 @@ async function generateChart1(
   });
 }
 
-async function getOzoneDataForLocation(location, csvFilePath) {
+async function getOzoneDataForLocation(location, pollutant, csvFilePath) {
   const response = await fetch(csvFilePath);
   const file = await response.text();
   const parsedData = Papa.parse(file, { header: true }).data;
 
-  const locationHeader = `OZONE_${location.toUpperCase()}`;
+  const locationHeader = `${pollutant}_${location.toUpperCase()}`;
   const data = parsedData.map((row) => parseFloat(row[locationHeader]));
   const forecastHours = parsedData.map((row) =>
     parseFloat(row["forecast_hours"])
