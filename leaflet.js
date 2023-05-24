@@ -498,6 +498,8 @@ const fields = [
   "last_seen",
 ];
 
+const historyFields = ["pm1.0_atm", "pm2.5_alt", "pm10.0_atm"];
+
 // const url = `https://api.purpleair.com/v1/sensors?fields=${fields.join(
 //   "%2C%20"
 // )}&nwlng=${nwlng}&nwlat=${nwlat}&selng=${selng}&selat=${selat}`;
@@ -555,11 +557,65 @@ function generateMarkerContentPA(id, title, lat, lng) {
                   <h4>Humidity: ${dataPurpleAir.sensor.humidity}%</h4>
                   <h4>Reliability: N/A</h4>
                   <h4>Time: ${formattedTime}</h4>
+                  <canvas id="pa-marker-chart-${title}" class="marker-chart" width="1" height="1"></canvas>
                   </div>
                 </div>
               </div>
             </div>
           `;
+          setTimeout(() => {
+            const canvas1 = document.getElementById(`pa-marker-chart-${title}`);
+
+            const ctx1 = canvas1.getContext("2d");
+
+            if (canvas1) {
+              // Get current timestamp
+              const currentTimestamp = Math.floor(Date.now() / 1000);
+
+              // Get timestamp representing 1 hour ago
+              const oneHourAgo = new Date();
+              oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+              const oneHourAgoTimestamp = Math.floor(
+                oneHourAgo.getTime() / 1000
+              );
+              const urlHist = `https://api.purpleair.com/v1/sensors/${id}/history?sensor_index=${id}&start_timestamp=${oneHourAgoTimestamp}&end_timestamp=${currentTimestamp}&fields=${historyFields.join(
+                "%2C"
+              )}`;
+              fetch(urlHist, {
+                method: "GET",
+                headers: {
+                  "X-API-Key": "D80F3AFD-DDAD-11ED-BD21-42010A800008",
+                },
+              })
+                .then((responsePurpleAir) => responsePurpleAir.json())
+                .then((dataPurpleAir) => {
+                  
+
+                  // extract data from historyData
+                  const historyXValues = dataPurpleAir.data.map(member => member[0]);
+                  const formattedDates = historyXValues.map(unixTimestamp => {
+                    const date = new Date(unixTimestamp * 1000);
+                    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}`;
+                    const formattedTime = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+                    const amOrPm = date.getHours() < 12 ? 'am' : 'pm';
+                    return `${formattedDate}, ${formattedTime} ${amOrPm}`;
+                  });
+                  const histXValues = formattedDates.reverse();
+                  console.log(histXValues);
+                  const historyYValues = dataPurpleAir.data.map(member => member[1]);
+
+                  console.log(historyXValues);
+                  console.log(historyYValues);
+                  // generate chart for both canvas elements
+                  generateChart1(
+                    ctx1,
+                    "PM25",
+                    histXValues,
+                    historyYValues
+                  );
+                });
+            }
+          }, 0);
           resolve(content);
         })
         .catch((error) => reject(error));
@@ -679,7 +735,7 @@ async function generateChart1(
       labels: historyXValues,
       datasets: [
         {
-          label: "Forecast",
+          label: "History data",
           fill: false,
           lineTension: 0,
           backgroundColor: "rgba(255,0,0,1.0)",

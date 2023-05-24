@@ -42,6 +42,9 @@ async function b() {
     selectedPollutant = pollutantSelection.value;
     console.log(selectedPollutant);
 
+    const highestPollutant = document.querySelector(".highest-pollutant");
+    highestPollutant.innerHTML = `Highest ${selectedPollutant} level in the forecast`;
+
     var timeSelection = document.querySelector("#select-time");
     console.log(timeSelection);
     selectedTime = timeSelection.value;
@@ -76,48 +79,50 @@ function a(pollutant, time) {
         // markersInfo.push({ title: data[i].title, o3Value: data[i]["O3_Value"] });
         stationNames.push(data[i].title);
         // console.log(stationNames[i]);
-        getData(pollutant, stationNames[i], `./AQSs_Info/forecast_${time}.csv`).then(
-          (result) => {
-            // extract data from forecastData
-            const forecastXValues = result.map((d) => d.date);
-            // console.log("forecastXValues " + forecastXValues);
-            const forecastYValues = result.map((d) => d.ozone);
-            // console.log("forecastYValues " + forecastYValues);
+        getData(
+          pollutant,
+          stationNames[i],
+          `./AQSs_Info/forecast_${time}.csv`
+        ).then((result) => {
+          // extract data from forecastData
+          const forecastXValues = result.map((d) => d.date);
+          // console.log("forecastXValues " + forecastXValues);
+          const forecastYValues = result.map((d) => d.ozone);
+          // console.log("forecastYValues " + forecastYValues);
 
-            let maxOzoneDate = null;
+          let maxOzoneDate = null;
 
-            for (let i = 0; i < forecastData.length; i++) {
-              if (forecastData[i].ozone > maxOzone) {
-                maxOzone = forecastData[i].ozone;
-                maxOzoneDate = forecastData[i].date;
-              }
-            }
-
-            // console.log("Max ozone value " + stationNames[i] + maxOzone);
-            // console.log("Date of max ozone value: " + maxOzoneDate);
-            markersInfo.push({
-              title: stationNames[i],
-              time: maxOzoneDate,
-              o3Value: maxOzone,
-            });
-
-            // increment counter and check if all async calls have completed
-            counter++;
-            if (counter === data.length - 1) {
-              // all async calls have completed, sort and display data
-              markersInfo.sort(function (a, b) {
-                return b.o3Value - a.o3Value;
-              });
-              // console.log("markersInfo: " + markersInfo);
-              // Show loading message/spinner
-              // const loading = document.getElementById("loading");
-              // loading.style.display = "block";
-              displayStationNames(markersInfo);
-              // Hide loading message/spinner
-              // loading.style.display = "none";
+          for (let i = 0; i < forecastData.length; i++) {
+            if (forecastData[i].ozone > maxOzone) {
+              maxOzone = forecastData[i].ozone;
+              maxOzoneDate = forecastData[i].date;
             }
           }
-        );
+
+          // console.log("Max ozone value " + stationNames[i] + maxOzone);
+          // console.log("Date of max ozone value: " + maxOzoneDate);
+          markersInfo.push({
+            title: stationNames[i],
+            time: maxOzoneDate,
+            o3Value: maxOzone,
+          });
+
+          // increment counter and check if all async calls have completed
+          counter++;
+          if (counter === data.length - 1) {
+            // all async calls have completed, sort and display data
+            markersInfo.sort(function (a, b) {
+              return b.o3Value - a.o3Value;
+            });
+            // console.log("markersInfo: " + markersInfo);
+            // Show loading message/spinner
+            // const loading = document.getElementById("loading");
+            // loading.style.display = "block";
+            displayStationNames(pollutant, markersInfo);
+            // Hide loading message/spinner
+            // loading.style.display = "none";
+          }
+        });
       }
     }
   });
@@ -148,7 +153,7 @@ async function getData(pollutant, location, csvFilePath) {
   return forecastData;
 }
 
-function displayStationNames(stationNames) {
+function displayStationNames(pollutant, stationNames) {
   const container = document.querySelector(".stations-info");
   let html = "";
 
@@ -158,16 +163,30 @@ function displayStationNames(stationNames) {
     const stationValue = stationNames[i].o3Value.toFixed(2);
 
     let classList = "";
-    if (stationValue <= 5.4) {
-      classList = "good";
-    } else if (stationValue > 5.4 && stationValue < 8.0) {
-      classList = "fair";
-    } else if (stationValue > 8.0 && stationValue < 12.0) {
-      classList = "poor";
-    } else if (stationValue > 12.0 && stationValue < 16.0) {
-      classList = "very-poor";
-    } else if (stationValue > 16.0) {
-      classList = "ext-poor";
+    if (pollutant == "OZONE") {
+      if (stationValue <= 5.4) {
+        classList = "good";
+      } else if (stationValue > 5.4 && stationValue < 8.0) {
+        classList = "fair";
+      } else if (stationValue > 8.0 && stationValue < 12.0) {
+        classList = "poor";
+      } else if (stationValue > 12.0 && stationValue < 16.0) {
+        classList = "very-poor";
+      } else if (stationValue > 16.0) {
+        classList = "ext-poor";
+      }
+    } else if (pollutant == "PM25") {
+      if (stationValue <= 25) {
+        classList = "good";
+      } else if (stationValue > 25 && stationValue < 50) {
+        classList = "fair";
+      } else if (stationValue > 50 && stationValue < 100) {
+        classList = "poor";
+      } else if (stationValue > 100 && stationValue < 300) {
+        classList = "very-poor";
+      } else if (stationValue > 300) {
+        classList = "ext-poor";
+      }
     }
 
     html += `<li class="station-item">
