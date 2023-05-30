@@ -1,69 +1,46 @@
+import { airPollutants } from "./pollutant.js";
+import getPollutantDataForLocation from "./retrieveData.js";
+import getCategoryLabel from "./extractCategory.js";
+
 window.addEventListener("DOMContentLoaded", (event) => {
+  const defaultPollutant = airPollutants.find(
+    (pollutant) => pollutant.value === "OZONE"
+  ); // Assign default pollutant to variable
+  const defaultTime = 24;
   const container = document.querySelector(".stations-info");
-  container.innerHTML = `<div class="loader"></div>`;
-  a("OZONE", 24); // or whichever pollutant you want to use as default
+  menuRender(defaultPollutant, defaultTime);
+  const buttonApplySelection = document.querySelector(".select-button");
+  buttonApplySelection.addEventListener("click", () => {
+    const pollutantSelection = document.querySelector("#select-pollutant");
+    const selectedPollutant = pollutantSelection.value;
+    const airPollutant = airPollutants.find(
+      (pollutant) => pollutant.value === selectedPollutant
+    ); // Assign selected pollutant to variable
+    const timeSelection = document.querySelector("#select-time");
+    const selectedTime = timeSelection.value;
+    menuRender(airPollutant, selectedTime);
+  });
 });
 
-b();
-// async function b() {
-//   const pollutantButtons = document.querySelectorAll(
-//     'input[type="radio"][name="pollutant"]'
-//   );
-//   var clickedPollutantButton = document.querySelector(
-//     'input[type="radio"][name="pollutant"]:checked'
-//   );
-//   console.log(clickedPollutantButton);
-//   pollutantButtons.forEach((button) => {
-//     button.addEventListener("change", (event) => {
-//       clickedPollutantButton.removeAttribute("checked");
-//       clickedPollutantButton = event.target;
-//       clickedPollutantButton.setAttribute("checked", "checked");
-//       stationsInfo = document.querySelectorAll(".stations-info");
-//       console.log(stationsInfo);
-//       stationsInfo.forEach((container) => {
-//         while (container.firstChild) {
-//           container.removeChild(container.firstChild);
-//         }
-//       });
+async function menuRender(pollutant, time) {
+  const highestPollutant = document.querySelector(".highest-pollutant");
+  highestPollutant.innerHTML = `Highest ${pollutant.name} level in the ${time}h forecast`;
+  const pollutantUnit = document.querySelector(".station-value");
+  pollutantUnit.innerHTML = pollutant.unit;
 
-//       console.log(event.target.dataset.pollutant);
-//       pollutant = event.target.dataset.pollutant;
-//       a(pollutant);
-//     });
-//   });
-// }
-
-async function b() {
-  const buttonApplySelection = document.querySelector(".select-button");
-  console.log(buttonApplySelection);
-  buttonApplySelection.addEventListener("click", () => {
-    var pollutantSelection = document.querySelector("#select-pollutant");
-    console.log(pollutantSelection);
-    selectedPollutant = pollutantSelection.value;
-    console.log(selectedPollutant);
-
-    const highestPollutant = document.querySelector(".highest-pollutant");
-    highestPollutant.innerHTML = `Highest ${selectedPollutant} level in the forecast`;
-
-    var timeSelection = document.querySelector("#select-time");
-    console.log(timeSelection);
-    selectedTime = timeSelection.value;
-    console.log(selectedTime);
-
-    stationsInfo = document.querySelectorAll(".stations-info");
-    console.log(stationsInfo);
-    stationsInfo.forEach((container) => {
-      while (container.firstChild) {
-        container.removeChild(container.firstChild);
-      }
-    });
-    const container = document.querySelector(".stations-info");
-    container.innerHTML = `<div class="loader"></div>`;
-    a(selectedPollutant, selectedTime);
+  // Delete children element of previous menu
+  const stationsInfo = document.querySelectorAll(".stations-info");
+  stationsInfo.forEach((container) => {
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
   });
+  const container = document.querySelector(".stations-info");
+  container.innerHTML = `<div class="loader"></div>`;
+  menuGetData(pollutant, time);
 }
 
-function a(pollutant, time) {
+function menuGetData(pollutant, time) {
   $.get("./AQSs_Info/e.csv", function (csvString) {
     // Use PapaParse to convert string to array of objects
     var data = Papa.parse(csvString, {
@@ -76,31 +53,26 @@ function a(pollutant, time) {
       var row = data[i];
       let maxOzone = 0;
       if (row != null) {
-        // markersInfo.push({ title: data[i].title, o3Value: data[i]["O3_Value"] });
         stationNames.push(data[i].title);
-        // console.log(stationNames[i]);
-        getData(
-          pollutant,
+        getPollutantDataForLocation(
           stationNames[i],
-          `./AQSs_Info/forecast_${time}.csv`
+          pollutant.value,
+          `./AQSs_Info/forecast_${time}.csv`,
+          "forecast"
         ).then((result) => {
           // extract data from forecastData
+          console.log(result);
           const forecastXValues = result.map((d) => d.date);
-          // console.log("forecastXValues " + forecastXValues);
-          const forecastYValues = result.map((d) => d.ozone);
-          // console.log("forecastYValues " + forecastYValues);
+          const forecastYValues = result.map((d) => d.value);
 
           let maxOzoneDate = null;
 
-          for (let i = 0; i < forecastData.length; i++) {
-            if (forecastData[i].ozone > maxOzone) {
-              maxOzone = forecastData[i].ozone;
-              maxOzoneDate = forecastData[i].date;
+          for (let i = 0; i < forecastYValues.length; i++) {
+            if (forecastYValues[i] > maxOzone) {
+              maxOzone = forecastYValues[i];
+              maxOzoneDate = forecastXValues[i];
             }
           }
-
-          // console.log("Max ozone value " + stationNames[i] + maxOzone);
-          // console.log("Date of max ozone value: " + maxOzoneDate);
           markersInfo.push({
             title: stationNames[i],
             time: maxOzoneDate,
@@ -114,43 +86,12 @@ function a(pollutant, time) {
             markersInfo.sort(function (a, b) {
               return b.o3Value - a.o3Value;
             });
-            // console.log("markersInfo: " + markersInfo);
-            // Show loading message/spinner
-            // const loading = document.getElementById("loading");
-            // loading.style.display = "block";
             displayStationNames(pollutant, markersInfo);
-            // Hide loading message/spinner
-            // loading.style.display = "none";
           }
         });
       }
     }
   });
-}
-
-async function getData(pollutant, location, csvFilePath) {
-  const response = await fetch(csvFilePath);
-  const file = await response.text();
-  const parsedData = Papa.parse(file, { header: true }).data;
-
-  const locationHeader = `${pollutant}_${location.toUpperCase()}`;
-  const data = parsedData.map((row) => parseFloat(row[locationHeader]));
-  const forecastHours = parsedData.map((row) =>
-    parseFloat(row["forecast_hours"])
-  );
-  const date = parsedData.map((row) =>
-    new Date(row["datetime"]).toLocaleString("en-AU", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
-  forecastData = [];
-  for (let i = 0; i < data.length; i++) {
-    if (!isNaN(forecastHours[i]) && forecastHours[i] > 0) {
-      forecastData.push({ date: date[i], ozone: data[i] });
-    }
-  }
-  return forecastData;
 }
 
 function displayStationNames(pollutant, stationNames) {
@@ -162,32 +103,7 @@ function displayStationNames(pollutant, stationNames) {
     const stationTime = stationNames[i].time;
     const stationValue = stationNames[i].o3Value.toFixed(2);
 
-    let classList = "";
-    if (pollutant == "OZONE") {
-      if (stationValue <= 5.4) {
-        classList = "good";
-      } else if (stationValue > 5.4 && stationValue < 8.0) {
-        classList = "fair";
-      } else if (stationValue > 8.0 && stationValue < 12.0) {
-        classList = "poor";
-      } else if (stationValue > 12.0 && stationValue < 16.0) {
-        classList = "very-poor";
-      } else if (stationValue > 16.0) {
-        classList = "ext-poor";
-      }
-    } else if (pollutant == "PM25") {
-      if (stationValue <= 25) {
-        classList = "good";
-      } else if (stationValue > 25 && stationValue < 50) {
-        classList = "fair";
-      } else if (stationValue > 50 && stationValue < 100) {
-        classList = "poor";
-      } else if (stationValue > 100 && stationValue < 300) {
-        classList = "very-poor";
-      } else if (stationValue > 300) {
-        classList = "ext-poor";
-      }
-    }
+    const classList = getCategoryLabel(pollutant, stationValue);
 
     html += `<li class="station-item">
       <div

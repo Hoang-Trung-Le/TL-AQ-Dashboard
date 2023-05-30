@@ -1,39 +1,11 @@
-// Data structure for air pollutants and their corresponding categories
-const airPollutants = [
-  {
-    name: "OZONE",
-    unit: "ppb",
-    categories: [
-      { label: "Good", range: "< 5.4" },
-      { label: "Fair", range: "5.4 - 8.0" },
-      { label: "Poor", range: "8.0 - 12.0" },
-      { label: "Very poor", range: "12.0 - 16.0" },
-      { label: "Ext poor", range: "> 16.0" },
-    ],
-  },
-  {
-    name: "PM25",
-    unit: "ppm",
-    categories: [
-      { label: "Good", range: "< 25" },
-      { label: "Fair", range: "25 - 50" },
-      { label: "Poor", range: "50 - 100" },
-      { label: "Very poor", range: "100 - 300" },
-      { label: "Ext poor", range: "> 300" },
-    ],
-  },
-];
+import { airPollutants } from "./pollutant.js";
 
 async function legendGenerator(selectedPollutant) {
-  //   const buttonApplySelection = document.querySelector(".select-button");
   const legendContainer = document.querySelector(".map-air-quality-legend");
-  //   buttonApplySelection.addEventListener("click", () => {
-  //     var pollutantSelection = document.querySelector("#select-pollutant");
-  // selectedPollutant = pollutantSelection.value;
 
   legendContainer.innerHTML = "";
   const airPollutant = airPollutants.find(
-    (pollutant) => pollutant.name === selectedPollutant
+    (pollutant) => pollutant.value === selectedPollutant
   );
   if (airPollutant) {
     // Loop through categories of the selected gas
@@ -64,8 +36,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
   legendGenerator("OZONE"); // or whichever pollutant you want to use as default
   const buttonApplySelection = document.querySelector(".select-button");
   buttonApplySelection.addEventListener("click", () => {
-    var pollutantSelection = document.querySelector("#select-pollutant");
-    selectedPollutant = pollutantSelection.value;
+    const pollutantSelection = document.querySelector("#select-pollutant");
+    const selectedPollutant = pollutantSelection.value;
     legendGenerator(selectedPollutant);
   });
 });

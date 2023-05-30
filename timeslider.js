@@ -1,3 +1,5 @@
+
+
 document.getElementById("time-input").addEventListener("input", (event) => {
   const hour = parseInt(event.target.value);
 
@@ -18,6 +20,13 @@ document.getElementById("time-input").addEventListener("input", (event) => {
 
 // Manual slider adjustment
 const slider = document.querySelector(".slider");
+// Set the slider min and max values
+var timeSelection = document.querySelector("#select-time");
+timeSelection.addEventListener("change", function () {
+  let selectedTime = parseInt(timeSelection.value);
+  const maxHour = selectedTime - 1; // Adjust the max value to selected time
+  slider.max = maxHour.toString();
+});
 slider.oninput = function () {
   updateChart(parseInt(this.value));
 };

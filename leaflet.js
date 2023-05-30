@@ -1,12 +1,18 @@
-// Initial configuration of map
+import generateMarkerContentPA from "./sidebarPurpleAir.js";
+import generateChart from "./generateChart.js";
+import purpleairSensors from "./AQSs_Info/sensors.js";
+import getCategoryLabel from "./extractCategory.js";
+import getPollutantDataForLocation from "./retrieveData.js";
+import { airPollutants } from "./pollutant.js";
 
+// Initial configuration of map
 const southWest = new L.LatLng(-37.50528021, 130.9992792),
   northEast = new L.LatLng(-28.15701999, 163.638889),
   bounds = new L.LatLngBounds(southWest, northEast);
 
 let config = {
   minZoom: 5,
-  maxZoom: 17,
+  maxZoom: 19,
   maxBounds: bounds,
   maxBoundsViscosity: 0.9,
 };
@@ -25,7 +31,7 @@ const cenLng = 147.032179;
 var map = L.map("mapid", config).setView([cenLat, cenLng], zoom); // ([coordinates], zoom scale)
 
 var osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 14,
+  maxZoom: 19,
   attribution:
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' +
     " contributors",
@@ -228,7 +234,7 @@ function colorMarker(state) {
 var purpleairFeatureGroups = L.featureGroup().addLayer(map);
 var purpleairInfo = [];
 var purpleairPromise = getPurpleAirInfo(purpleairInfo, purpleairFeatureGroups);
-import purpleairSensors from "./AQSs_Info/sensors.js";
+
 console.log(nswMapData);
 console.log(purpleairSensors);
 
@@ -365,48 +371,53 @@ function generateMarkerContent(title, lat, lng) {
     if (canvas1) {
       var timeSelection = document.querySelector("#select-time");
       console.log(timeSelection);
-      selectedTime = timeSelection.value;
+      let selectedTime = timeSelection.value;
       console.log(selectedTime);
 
       var pollutantSelection = document.querySelector("#select-pollutant");
       console.log(pollutantSelection);
-      selectedPollutant = pollutantSelection.value;
+      let selectedPollutant = pollutantSelection.value;
       console.log(selectedPollutant);
 
-      getOzoneDataForLocation(
+      var selectedPollutantObj = airPollutants.find(
+        (pollutant) => pollutant.value === selectedPollutant
+      );
+
+      getPollutantDataForLocation(
         title,
-        selectedPollutant,
-        `./AQSs_Info/forecast_${selectedTime}.csv`
+        selectedPollutantObj.value,
+        `./AQSs_Info/forecast_${selectedTime}.csv`,
+        "both"
       ).then((result) => {
+        console.log(result);
         // extract data from forecastData
         const forecastXValues = result.forecastData.map((d) => d.date);
-        const forecastYValues = result.forecastData.map((d) => d.ozone);
+        const forecastYValues = result.forecastData.map((d) => d.value);
+        console.log(forecastYValues);
         // extract data from historyData
         const historyXValues = result.historyData.map((d) => d.date);
-        const historyYValues = result.historyData.map((d) => d.ozone);
+        const historyYValues = result.historyData.map((d) => d.value);
+        console.log(historyYValues);
         // console.log(forecastXValues.map((x, i) => ({ x: x, y: forecastYValues[i] })));
         // console.log(historyXValues.map((x, i) => ({ x: x, y: historyYValues[i] })));
 
         const stationColorIndex = document.querySelector(
           ".marker-title-container"
         );
-        if (forecastYValues[0] <= 2) {
-          stationColorIndex.classList.add("good");
-        } else if (forecastYValues[0] <= 3) {
-          stationColorIndex.classList.add("fair");
-        } else if (forecastYValues[0] <= 5) {
-          stationColorIndex.classList.add("poor");
-        } else {
-          stationColorIndex.classList.add("very-poor");
-        }
+        const stationCategory = getCategoryLabel(
+          selectedPollutantObj,
+          forecastYValues[0]
+        );
+        stationColorIndex.classList.add(stationCategory);
 
         // generate chart for both canvas elements
         generateChart(
           ctx1,
-          forecastXValues,
+          selectedPollutant,
+          historyYValues,
           forecastYValues,
           historyXValues,
-          historyYValues
+          forecastXValues
         );
       });
     }
@@ -430,419 +441,71 @@ function generateMarkerContent(title, lat, lng) {
         } else {
           tabContents[index].classList.add("active");
           tabs[index].classList.add("active");
-          getHistoryDataForLocation(
+          getPollutantDataForLocation(
             title,
             "NO2",
-            "./AQSs_Info/forecast1.csv"
+            "./AQSs_Info/forecast1.csv",
+            "history"
           ).then((result) => {
             // extract data from historyData
             const historyXValues = result.map((d) => d.date);
             console.log(historyXValues);
-            const historyYValues = result.map((d) => d.NO2);
+            const historyYValues = result.map((d) => d.value);
             console.log(historyYValues);
 
             // generate chart for both canvas elements
-            generateChart1(ctx2, "NO2", historyXValues, historyYValues);
+            generateChart(
+              ctx2,
+              airPollutants[2],
+              historyYValues,
+              historyXValues
+            );
           });
-          getHistoryDataForLocation(
+          getPollutantDataForLocation(
             title,
             "WDR",
-            "./AQSs_Info/forecast1.csv"
+            "./AQSs_Info/forecast1.csv",
+            "history"
           ).then((result) => {
             // extract data from historyData
             const historyXValues = result.map((d) => d.date);
             console.log(historyXValues);
-            const historyYValues = result.map((d) => d.NO2);
+            const historyYValues = result.map((d) => d.value);
             console.log(historyYValues);
 
             // generate chart for both canvas elements
-            generateChart1(ctx3, "WDR", historyXValues, historyYValues);
+            generateChart(
+              ctx3,
+              airPollutants[3],
+              historyYValues,
+              historyXValues
+            );
           });
-          getHistoryDataForLocation(
+          getPollutantDataForLocation(
             title,
             "WSP",
-            "./AQSs_Info/forecast1.csv"
+            "./AQSs_Info/forecast1.csv",
+            "history"
           ).then((result) => {
             // extract data from historyData
             const historyXValues = result.map((d) => d.date);
             console.log(historyXValues);
-            const historyYValues = result.map((d) => d.NO2);
+            const historyYValues = result.map((d) => d.value);
             console.log(historyYValues);
 
             // generate chart for both canvas elements
-            generateChart1(ctx4, "WSP", historyXValues, historyYValues);
+            generateChart(
+              ctx4,
+              airPollutants[4],
+              historyYValues,
+              historyXValues
+            );
           });
         }
       });
     });
   }, 0);
   return content;
-}
-
-const nwlng = 140.9992792;
-const nwlat = -28.15701999;
-const selng = 153.638889;
-const selat = -37.50528021;
-
-const fields = [
-  "name",
-  "location_type",
-  "latitude",
-  "longitude",
-  "rssi",
-  "pm1.0",
-  "pm2.5_alt",
-  "pm10.0",
-  "temperature",
-  "humidity",
-  "last_seen",
-];
-
-const historyFields = ["pm1.0_atm", "pm2.5_alt", "pm10.0_atm"];
-
-// const url = `https://api.purpleair.com/v1/sensors?fields=${fields.join(
-//   "%2C%20"
-// )}&nwlng=${nwlng}&nwlat=${nwlat}&selng=${selng}&selat=${selat}`;
-
-// Call the fetchData function initially when the page loads
-// fetchData();
-
-// if (humidity) {
-//   console.log("Not reliable");
-// }
-
-// Call the fetchData function every 2 minutes using setInterval()
-// setInterval(fetchData, 120000);
-
-function generateMarkerContentPA(id, title, lat, lng) {
-  return new Promise((resolve, reject) => {
-    const url = `https://api.purpleair.com/v1/sensors/${id}?sensor_index=${id}&fields=${fields.join(
-      "%2C%20"
-    )}`;
-    const fetchData = () => {
-      fetch(url, {
-        method: "GET",
-        headers: {
-          "X-API-Key": "D80F3AFD-DDAD-11ED-BD21-42010A800008",
-        },
-      })
-        .then((responsePurpleAir) => responsePurpleAir.json())
-        .then((dataPurpleAir) => {
-          console.log(dataPurpleAir);
-          const unixTimestamp = dataPurpleAir.sensor.last_seen;
-          const formattedTime = new Date(unixTimestamp * 1000).toLocaleString(
-            "en-AU"
-          );
-          const currTemp = (
-            ((dataPurpleAir.sensor.temperature - 32) * 5) /
-            9
-          ).toFixed(2);
-          console.log(dataPurpleAir.sensor);
-          const content = `
-            <div class="marker-content">
-              <div class="marker-title-container">
-                <h2 class="marker-title">${title} Station</h2>
-                <p class="marker-latlng">
-                  <b>Latitude:</b> ${lat} | <b>Longitude:</b> ${lng}
-                </p>
-              </div>
-
-              <div class="tab-content">
-                <div class="chart active">
-                  <div class="stats">
-                  <h4>PM1.0: ${dataPurpleAir.sensor["pm1.0"]}</h4>
-                  <h4>PM2.5: ${dataPurpleAir.sensor["pm2.5_alt"]}</h4>
-                  <h4>PM10.0: ${dataPurpleAir.sensor["pm10.0"]}</h4>
-                  <h4>Temperature: ${currTemp}°C</h4>
-                  <h4>Humidity: ${dataPurpleAir.sensor.humidity}%</h4>
-                  <h4>Reliability: N/A</h4>
-                  <h4>Time: ${formattedTime}</h4>
-                  <canvas id="pa-marker-chart-${title}" class="marker-chart" width="1" height="1"></canvas>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-          setTimeout(() => {
-            const canvas1 = document.getElementById(`pa-marker-chart-${title}`);
-
-            const ctx1 = canvas1.getContext("2d");
-
-            if (canvas1) {
-              // Get current timestamp
-              const currentTimestamp = Math.floor(Date.now() / 1000);
-
-              // Get timestamp representing 1 hour ago
-              const oneHourAgo = new Date();
-              oneHourAgo.setHours(oneHourAgo.getHours() - 1);
-              const oneHourAgoTimestamp = Math.floor(
-                oneHourAgo.getTime() / 1000
-              );
-              const urlHist = `https://api.purpleair.com/v1/sensors/${id}/history?sensor_index=${id}&start_timestamp=${oneHourAgoTimestamp}&end_timestamp=${currentTimestamp}&fields=${historyFields.join(
-                "%2C"
-              )}`;
-              fetch(urlHist, {
-                method: "GET",
-                headers: {
-                  "X-API-Key": "D80F3AFD-DDAD-11ED-BD21-42010A800008",
-                },
-              })
-                .then((responsePurpleAir) => responsePurpleAir.json())
-                .then((dataPurpleAir) => {
-                  
-
-                  // extract data from historyData
-                  const historyXValues = dataPurpleAir.data.map(member => member[0]);
-                  const formattedDates = historyXValues.map(unixTimestamp => {
-                    const date = new Date(unixTimestamp * 1000);
-                    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}`;
-                    const formattedTime = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-                    const amOrPm = date.getHours() < 12 ? 'am' : 'pm';
-                    return `${formattedDate}, ${formattedTime} ${amOrPm}`;
-                  });
-                  const histXValues = formattedDates.reverse();
-                  console.log(histXValues);
-                  const historyYValues = dataPurpleAir.data.map(member => member[1]);
-
-                  console.log(historyXValues);
-                  console.log(historyYValues);
-                  // generate chart for both canvas elements
-                  generateChart1(
-                    ctx1,
-                    "PM25",
-                    histXValues,
-                    historyYValues
-                  );
-                });
-            }
-          }, 0);
-          resolve(content);
-        })
-        .catch((error) => reject(error));
-    };
-
-    fetchData();
-
-    // // Update the content every 1 minute
-    // setInterval(() => {
-    //   fetchData()
-    //     .then((content) => {
-    //       sidebar.setContent(content);
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //       // Handle the error if needed
-    //     });
-    // }, 1000);
-  });
-}
-
-async function generateChart(
-  context,
-  forecastXValues,
-  forecastYValues,
-  historyXValues,
-  historyYValues
-) {
-  new Chart(context, {
-    type: "line",
-    data: {
-      labels: historyXValues.concat(forecastXValues),
-      datasets: [
-        {
-          label: "Historical data",
-          fill: false,
-          backgroundColor: "rgba(255,0,255,1.0)",
-          borderColor: "rgba(255,0,255,0.1)",
-          data: historyXValues.map((x, i) => ({ x: x, y: historyYValues[i] })),
-        },
-        {
-          label: "Forecast",
-          fill: false,
-          lineTension: 0,
-          backgroundColor: "rgba(0,0,255,1.0)",
-          borderColor: "rgba(0,0,255,0.1)",
-          data: forecastXValues.map((x, i) => ({
-            x: x,
-            y: forecastYValues[i],
-          })),
-        },
-      ],
-    },
-    options: {
-      plugins: {
-        annotation: {
-          annotations: {
-            vertLine: {
-              type: "line",
-              xMin: 12,
-              xMax: 12,
-              borderColor: "red",
-              borderWidth: 2,
-              label: {
-                content: forecastYValues[0],
-                enabled: true,
-                position: "start",
-                backgroundColor: "rgba(0,0,0,0.6)",
-              },
-            },
-          },
-        },
-      },
-      responsive: true,
-      legend: {
-        display: true,
-        labels: {
-          fontSize: 12,
-          fontColor: "#333",
-        },
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Forecast time",
-          },
-          ticks: {
-            maxRotation: 90,
-          },
-        },
-
-        y: {
-          ticks: {
-            suggestedMin: 0,
-            suggestedMax: Math.max(...historyYValues, ...forecastYValues) * 1.1,
-          },
-          title: {
-            display: true,
-            text: "Ozone (ppb)",
-          },
-        },
-      },
-    },
-  });
-}
-
-async function generateChart1(
-  context,
-  parameter,
-  historyXValues,
-  historyYValues
-) {
-  new Chart(context, {
-    type: "line",
-    data: {
-      labels: historyXValues,
-      datasets: [
-        {
-          label: "History data",
-          fill: false,
-          lineTension: 0,
-          backgroundColor: "rgba(255,0,0,1.0)",
-          borderColor: "rgba(255,0,0,0.5)",
-          data: historyYValues,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      title: {
-        display: true,
-        text: `${parameter} History Data`,
-        fontSize: 15,
-        fontColor: "#000000",
-        fontStyle: "bold",
-      },
-      legend: {
-        display: true,
-        labels: {
-          fontSize: 12,
-          fontColor: "#333",
-        },
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Forecast time",
-          },
-          ticks: {
-            maxRotation: 90,
-          },
-        },
-        y: {
-          ticks: {
-            suggestedMin: 0,
-            suggestedMax: Math.max(...historyYValues) * 1.1,
-          },
-          title: {
-            display: true,
-            text: `${parameter} ()`,
-          },
-        },
-      },
-    },
-  });
-}
-
-async function getOzoneDataForLocation(location, pollutant, csvFilePath) {
-  const response = await fetch(csvFilePath);
-  const file = await response.text();
-  const parsedData = Papa.parse(file, { header: true }).data;
-
-  const locationHeader = `${pollutant}_${location.toUpperCase()}`;
-  const data = parsedData.map((row) => parseFloat(row[locationHeader]));
-  const forecastHours = parsedData.map((row) =>
-    parseFloat(row["forecast_hours"])
-  );
-  const date = parsedData.map((row) =>
-    new Date(row["datetime"]).toLocaleString(undefined, {
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
-  var forecastData = [];
-  for (let i = 0; i < data.length; i++) {
-    if (!isNaN(forecastHours[i]) && forecastHours[i] > 0) {
-      forecastData.push({ date: date[i], ozone: data[i] });
-    }
-  }
-  var historyData = [];
-  for (let i = 0; i < data.length; i++) {
-    if (!isNaN(forecastHours[i]) && forecastHours[i] <= 0) {
-      historyData.push({ date: date[i], ozone: data[i] });
-    }
-  }
-  return { forecastData, historyData };
-}
-
-async function getHistoryDataForLocation(location, parameter, csvFilePath) {
-  const response = await fetch(csvFilePath);
-  const file = await response.text();
-  const parsedData = Papa.parse(file, { header: true }).data;
-
-  const locationHeader = `${parameter}_${location.toUpperCase()}`;
-  const data = parsedData.map((row) => parseFloat(row[locationHeader]));
-  const forecastHours = parsedData.map((row) =>
-    parseFloat(row["forecast_hours"])
-  );
-  const date = parsedData.map((row) =>
-    new Date(row["datetime"]).toLocaleString(undefined, {
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
-  const historyData = [];
-  for (let i = 0; i < data.length; i++) {
-    if (!isNaN(forecastHours[i]) && forecastHours[i] <= 0) {
-      historyData.push({ date: date[i], NO2: data[i] });
-    }
-  }
-  return historyData;
 }
 
 var nswBoundary = L.geoJSON(nswMapData, {
@@ -862,25 +525,6 @@ var nswBoundary = L.geoJSON(nswMapData, {
 //   "PM2.5": StadiaAlidadeSmoothDark,
 // };
 // L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
-
-// Define a function to fetch data from the API
-
-// Call the fetchData function initially when the page loads
-// fetchData();
-
-// Call the fetchData function every 1 minute using setInterval()
-// setInterval(fetchData, 60000);
-
-// var ind = 1;
-// function change() {
-//   var demo = document.getElementById("stat");
-//   console.log(demo);
-//   demo.innerHTML = (ind + 1) +"";
-//   ind++;
-//   console.log(demo.innerHTML);
-// }
-// change();
-// setInterval(change, 1000);
 
 const sensorsID = {
   sensor1: {

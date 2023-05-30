@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html >
+<!--From https://codepen.io/frytyler/pen/EGdtg-->
+<head>
+  <meta charset="UTF-8">
+  <title>ML API</title>
+  <!-- <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+
+<body>
+
+ <div class="login">
+	<h1>Predict Air Pollution</h1>
+
+     <!-- Main Input For Receiving Query to our ML -->
+    <form action="{{ url_for('predict')}}"method="post">
+    	<input type="text" name="startdate" placeholder="2023-05-10" required="required" />
+      <!-- <input type="text" name="CTM" placeholder="CTM" required="required" /> -->
+		  <!-- <input type="text" name="interview_score" placeholder="Interview Score" required="required" /> -->
+      <button type="submit" class="btn btn-primary btn-block btn-large" value="VALUE1" name="getObs">Get OBS & Forecast</button>
+      <!-- <button type="submit" class="btn btn-primary btn-block btn-large" value="VALUE1" name="predict">Predict</button> -->
+    </form>
+
+   <br>
+   {{ GetOBS_text }} 
+   <br>
+   {{ prediction_text }}
+   <br> 
+    <!-- <canvas id="lineChart" width="500" height="200"></canvas> -->
+    <!-- <script>
+      var ctx = document.getElementById("lineChart").getContext("2d");
+      var lineChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: {{ labels | safe }},
+          datasets: [
+            {
+              label: "OBS",
+              data: {{ values | safe}},
+              fill: false,
+              fillColor: "rgba(0,0,0,0)",
+              strokeColor: "rgba(220,220,220,1)",
+              pointColor: "rgba(200,122,20,1)",
+              borderColor: 'blue',
+              lineTension: 0.5
+            },
+            {
+              label: "forecast",
+              data: {{ forecast | safe}},
+              fill: false,
+              borderColor: 'red',
+              fillColor: 'rgba(0,0,0,0)',
+              strokeColor: 'rgba(220,180,0,1)',
+              pointColor: 'rgba(220,180,0,1)',
+              lineTension: 1
+            },
+          ]
+        },
+        option: {
+          responsive: false
+        }
+      });
+      var chartOptions = {
+        legend: {
+        display: true,
+        position: 'top',
+        labels: {
+          boxWidth: 80,
+          fontColor: 'black',
+
+        } 
+      }
+    };
+    </script> -->
+    <canvas id="speedChart" width="400" height="200"></canvas>
+    <script>
+      var speedCanvas = document.getElementById("speedChart");
+
+      Chart.defaults.global.defaultFontFamily = "Lato";
+      Chart.defaults.global.defaultFontSize = 18;
+
+      var dataFirst = {
+          label: "OBS",
+          data: {{ values|safe}},
+          lineTension: 0,
+          fill: false,
+          borderColor: 'blue'
+        };
+
+      var dataSecond = {
+          label: "Forecast",
+          data: {{ forecast |safe}},
+          lineTension: 0,
+          fill: false,
+        borderColor: 'red'
+        };
+
+      var speedData = {
+        labels: {{ labels |safe}},
+        datasets: [dataFirst, dataSecond]
+      };
+
+      var chartOptions = {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            boxWidth: 80,
+            fontColor: 'black'
+          }
+        }
+      };
+
+      var lineChart = new Chart(speedCanvas, {
+        type: 'line',
+        data: speedData,
+        options: chartOptions
+      });
+    </script>
+
+    <!-- <script>
+      // Line chart
+      <canvas id="myChart" width="400" height="400"></canvas>
+      new Chart(document.getElementById("myCanvas"), {
+        type: 'line',
+        data: {
+          labels: {{ labels |safe}},
+          datasets: [
+            {
+              data: {{ forecast |safe}},
+              label: "Forecast",
+              borderColor: "#3e95cd",
+              fill: false
+            }, 
+            {
+              data: {{values|safe}},
+              label: "OBS",
+              borderColor: "#8e5ea2",
+              fill: false
+            }, 
+            
+          ]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Forecast PM2.5'
+          },
+          hover: {
+          mode: 'index',
+          intersect: true
+          },
+        }
+      });
+    </script> -->
+    
+ </div>
+
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
