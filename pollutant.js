@@ -2,8 +2,9 @@
 export const airPollutants = [
   {
     value: "OZONE",
+    label: "O3",
     name: "Ozone",
-    unit: "ppb",
+    unit: "pphm",
     categories: [
       { label: "Good", range: "< 5.4" },
       { label: "Fair", range: "5.4 - 8.0" },
@@ -14,6 +15,7 @@ export const airPollutants = [
   },
   {
     value: "PM25",
+    label: "PM25",
     name: "PM 2.5",
     unit: "µg/m³",
     categories: [

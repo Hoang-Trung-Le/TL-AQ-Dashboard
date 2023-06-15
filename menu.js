@@ -1,26 +1,5 @@
-import { airPollutants } from "./pollutant.js";
 import getPollutantDataForLocation from "./retrieveData.js";
 import getCategoryLabel from "./extractCategory.js";
-
-window.addEventListener("DOMContentLoaded", (event) => {
-  const defaultPollutant = airPollutants.find(
-    (pollutant) => pollutant.value === "OZONE"
-  ); // Assign default pollutant to variable
-  const defaultTime = 24;
-  const container = document.querySelector(".stations-info");
-  menuRender(defaultPollutant, defaultTime);
-  const buttonApplySelection = document.querySelector(".select-button");
-  buttonApplySelection.addEventListener("click", () => {
-    const pollutantSelection = document.querySelector("#select-pollutant");
-    const selectedPollutant = pollutantSelection.value;
-    const airPollutant = airPollutants.find(
-      (pollutant) => pollutant.value === selectedPollutant
-    ); // Assign selected pollutant to variable
-    const timeSelection = document.querySelector("#select-time");
-    const selectedTime = timeSelection.value;
-    menuRender(airPollutant, selectedTime);
-  });
-});
 
 async function menuRender(pollutant, time) {
   const highestPollutant = document.querySelector(".highest-pollutant");
@@ -39,7 +18,7 @@ async function menuRender(pollutant, time) {
   container.innerHTML = `<div class="loader"></div>`;
   menuGetData(pollutant, time);
 }
-
+var region = null;
 function menuGetData(pollutant, time) {
   $.get("./AQSs_Info/e.csv", function (csvString) {
     // Use PapaParse to convert string to array of objects
@@ -53,15 +32,26 @@ function menuGetData(pollutant, time) {
       var row = data[i];
       let maxOzone = 0;
       if (row != null) {
+        const selectedRegion = document.querySelector("#select-region").value;
+        
+        if (selectedRegion == "Sydney South-west") {
+          region = "SW";
+        } else if (selectedRegion == "Sydney East") {
+          region = "CE";
+        } else if (selectedRegion == "Sydney North-west") {
+          region = "NW";
+        }
+        // console.log(selectedRegion);
+        // console.log(region);
         stationNames.push(data[i].title);
         getPollutantDataForLocation(
           stationNames[i],
           pollutant.value,
-          `./AQSs_Info/forecast_${time}.csv`,
+          `./AQSs_Info/${region}_forecast_${pollutant.label}_${time}_48_14062023_.csv`,
           "forecast"
         ).then((result) => {
           // extract data from forecastData
-          console.log(result);
+          // console.log(result);
           const forecastXValues = result.map((d) => d.date);
           const forecastYValues = result.map((d) => d.value);
 
@@ -119,3 +109,4 @@ function displayStationNames(pollutant, stationNames) {
 
   container.innerHTML = html;
 }
+export { menuRender };

@@ -1,12 +1,6 @@
-import { airPollutants } from "./pollutant.js";
-
-async function legendGenerator(selectedPollutant) {
+function legendGenerator(airPollutant) {
   const legendContainer = document.querySelector(".map-air-quality-legend");
-
   legendContainer.innerHTML = "";
-  const airPollutant = airPollutants.find(
-    (pollutant) => pollutant.value === selectedPollutant
-  );
   if (airPollutant) {
     // Loop through categories of the selected gas
     airPollutant.categories.forEach((category) => {
@@ -29,15 +23,6 @@ async function legendGenerator(selectedPollutant) {
       legendContainer.appendChild(pollutantLegend);
     });
   }
-  //   });
 }
 
-window.addEventListener("DOMContentLoaded", (event) => {
-  legendGenerator("OZONE"); // or whichever pollutant you want to use as default
-  const buttonApplySelection = document.querySelector(".select-button");
-  buttonApplySelection.addEventListener("click", () => {
-    const pollutantSelection = document.querySelector("#select-pollutant");
-    const selectedPollutant = pollutantSelection.value;
-    legendGenerator(selectedPollutant);
-  });
-});
+export { legendGenerator };

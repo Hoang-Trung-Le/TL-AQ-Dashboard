@@ -22,7 +22,7 @@ async function generateChart(
     label: setNumbers > 2 ? ["History data", "Forecast data"] : ["History data"]
   };
   
-  console.log(a);
+  // console.log(a);
   new Chart(context, {
     type: "line",
     data: {
@@ -44,13 +44,12 @@ async function generateChart(
           annotations: {
             vertLine: {
               type: "line",
-              xMin: 12,
-              xMax: 12,
-              borderColor: "red",
+              xMin: 48,
+              xMax: 48,
+              borderColor: "blue",
               borderWidth: 2,
               label: {
-                content: "forecastYValues[0]",
-                // content: forecastYValues[0],
+                content: dataSets[1][0],
                 enabled: true,
                 position: "start",
                 backgroundColor: "rgba(0,0,0,0.6)",

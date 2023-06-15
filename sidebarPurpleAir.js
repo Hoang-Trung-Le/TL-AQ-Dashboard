@@ -49,7 +49,7 @@ function generateMarkerContentPA(id, title, lat, lng) {
       })
         .then((responsePurpleAir) => responsePurpleAir.json())
         .then((dataPurpleAir) => {
-          console.log(dataPurpleAir);
+          // console.log(dataPurpleAir);
           const unixTimestamp = dataPurpleAir.sensor.last_seen;
           const formattedTime = new Date(unixTimestamp * 1000).toLocaleString(
             "en-AU"
@@ -58,7 +58,7 @@ function generateMarkerContentPA(id, title, lat, lng) {
             ((dataPurpleAir.sensor.temperature - 32) * 5) /
             9
           ).toFixed(2);
-          console.log(dataPurpleAir.sensor);
+          // console.log(dataPurpleAir.sensor);
           const content = `
               <div class="marker-content">
                 <div class="marker-title-container">
@@ -76,7 +76,6 @@ function generateMarkerContentPA(id, title, lat, lng) {
                     <h4>PM10.0: ${dataPurpleAir.sensor["pm10.0"]}</h4>
                     <h4>Temperature: ${currTemp}°C</h4>
                     <h4>Humidity: ${dataPurpleAir.sensor.humidity}%</h4>
-                    <h4>Reliability: N/A</h4>
                     <h4>Time: ${formattedTime}</h4>
                     <canvas id="pa-marker-chart-${title}" class="marker-chart" width="1" height="1"></canvas>
                     </div>
@@ -127,13 +126,13 @@ function generateMarkerContentPA(id, title, lat, lng) {
                     return `${formattedDate}, ${formattedTime} ${amOrPm}`;
                   });
                   const histXValues = formattedDates.reverse();
-                  console.log(histXValues);
+                  // console.log(histXValues);
                   const historyYValues = dataPurpleAir.data.map(
                     (member) => member[1]
                   );
 
-                  console.log(historyXValues);
-                  console.log(historyYValues);
+                  // console.log(historyXValues);
+                  // console.log(historyYValues);
                   // generate chart for both canvas elements
                   generateChart(ctx1, airPollutants[1], historyYValues, histXValues);
                 });
