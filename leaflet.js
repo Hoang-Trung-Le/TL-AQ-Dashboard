@@ -117,14 +117,6 @@ let markerClusterGroup = L.markerClusterGroup({
   showCoverageOnHover: false,
 });
 
-function capitaliseCase(words) {
-  words = words.trim().toLowerCase().split(" ");
-  for (let i = 0; i < words.length; i++) {
-    words[i] = words[i][0].toUpperCase() + words[i].substr(1);
-  }
-  words = words.join(" ");
-  return words;
-}
 
 const regionFeatureGroups = {};
 const regionClusterGroup = L.markerClusterGroup({
@@ -153,7 +145,7 @@ sites.regionDetails.forEach((region) => {
     let latLngs = L.latLng([station.Latitude, station.Longitude]);
     let marker = L.marker(latLngs, {
       icon: colorMarker("station"),
-    }).bindTooltip(capitaliseCase(station.SiteName), { direction: "top" });
+    }).bindTooltip(station.SiteName, { direction: "top" });
     marker.on("click", () => {
       if (activeSensorMarker != null) {
         activeSensorMarker.setIcon(colorMarker("purpleair"));
@@ -209,7 +201,7 @@ function colorMarker(state) {
 }
 
 function generateMarkerContent(station) {
-  const title = capitaliseCase(station.SiteName);
+  const title = station.SiteName;
   const content = `
 	  <div class="marker-content">
 

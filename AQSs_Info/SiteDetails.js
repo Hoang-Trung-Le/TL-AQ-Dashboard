@@ -867,7 +867,7 @@ const regionDetails = [
 
 sitesDetails.forEach((site) => {
   let regionMatch = false;
-
+  site.SiteName = capitaliseCase(site.SiteName);
   for (let i = 0; i < regionDetails.length - 1; i++) {
     const region = regionDetails[i].name;
     if (region === site.Region) {
@@ -881,5 +881,14 @@ sitesDetails.forEach((site) => {
     site.Region = "NSW";
   }
 });
+
+function capitaliseCase(words) {
+  words = words.trim().toLowerCase().split(" ");
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+  }
+  words = words.join(" ");
+  return words;
+}
 
 export { sitesDetails, regionDetails };
