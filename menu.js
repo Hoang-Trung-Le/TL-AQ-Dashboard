@@ -56,7 +56,7 @@ function menuGetData(selectedRegion, pollutant, time) {
             // increment counter and check if all async calls have completed
             counter++;
             console.log(counter);
-            if (counter === data - 1) {
+            if (counter === data) {
               // all async calls have completed, sort and display data
               markersInfo.sort(function (a, b) {
                 return b.maxValue - a.maxValue;
