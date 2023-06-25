@@ -16,7 +16,6 @@ window.addEventListener("DOMContentLoaded", () => {
   let previousTime = defaultTimeScope;
   let previousRegion = null;
 
-  
   const selectButton = document.querySelector("#apply-button");
   selectButton.addEventListener("click", () => {
     const pollutantSelection = document.querySelector("#select-pollutant");
@@ -25,15 +24,15 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     const selectedTime = document.querySelector("#select-time").value;
     const selectedRegion = document.querySelector("#select-region").value;
-    let region = null;
-    if (selectedRegion == "Sydney South-west") {
-      region = "SW";
-    } else if (selectedRegion == "Sydney East") {
-      region = "CE";
-    } else if (selectedRegion == "Sydney North-west") {
-      region = "NW";
-    }
-    console.log(region);
+    // let region = null;
+    // if (selectedRegion == "Sydney South-west") {
+    //   region = "SW";
+    // } else if (selectedRegion == "Sydney East") {
+    //   region = "CE";
+    // } else if (selectedRegion == "Sydney North-west") {
+    //   region = "NW";
+    // }
+    // console.log(region);
     // Check if the selections have changed
     if (
       selectedPollutant !== previousPollutant ||
@@ -41,7 +40,7 @@ window.addEventListener("DOMContentLoaded", () => {
       selectedRegion != previousRegion
     ) {
       // Execute the functions only if the selections have changed
-      menuRender(selectedPollutant, selectedTime);
+      menuRender(selectedRegion, selectedPollutant, selectedTime);
       legendGenerator(selectedPollutant);
 
       // Update the previous selections

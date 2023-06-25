@@ -631,7 +631,7 @@ const sitesDetails = [
   },
   {
     Site_Id: 9350,
-    SiteName: "Armidale ",
+    SiteName: "Armidale",
     Longitude: 151.661658,
     Latitude: -30.50845,
     Region: "Northern Tablelands LLS",
@@ -795,47 +795,91 @@ const sitesDetails = [
     SiteName: "CAMMERAY",
     Longitude: 151.216707,
     Latitude: -33.827271,
-    Region: "Research Monitoring ",
+    Region: "Research Monitoring",
   },
 ];
 
-const regionDetails = {
-  "Sydney East": {
+const regionDetails = [
+  {
+    name: "Sydney East",
+    label: "CE",
     largestLatitude: -33.76524,
     smallestLatitude: -33.93175,
     largestLongitude: 151.24278,
     smallestLongitude: 151.0461,
+    stations: [],
   },
-  "Sydney South-west": {
+  {
+    name: "Sydney South-west",
+    label: "SW",
     largestLatitude: -33.91766,
     smallestLatitude: -34.30621,
     largestLongitude: 150.90727,
     smallestLongitude: 150.49819,
+    stations: [],
   },
-  Illawarra: {
+  {
+    name: "Illawarra",
+    label: "IL",
     largestLatitude: -34.41706,
     smallestLatitude: -34.57781,
     largestLongitude: 150.88733,
     smallestLongitude: 150.78252,
+    stations: [],
   },
-  "Sydney North-west": {
+  {
+    name: "Sydney North-west",
+    label: "NW",
     largestLatitude: -33.61641,
     smallestLatitude: -33.7995,
     largestLongitude: 150.99777,
     smallestLongitude: 150.70385,
+    stations: [],
   },
-  "Upper Hunter": {
+  {
+    name: "Upper Hunter",
+    label: "UH",
     largestLatitude: -32.12665,
     smallestLatitude: -32.64864,
     largestLongitude: 151.20895,
     smallestLongitude: 150.45824,
+    stations: [],
   },
-  "Lower Hunter": {
+  {
+    name: "Lower Hunter",
+    label: "LH",
     largestLatitude: -32.79677,
     smallestLatitude: -32.9312,
     largestLongitude: 151.75965,
     smallestLongitude: 151.66099,
+    stations: [],
   },
-};
+  {
+    name: "NSW",
+    label: "NSW",
+    largestLatitude: -28.15701999,
+    smallestLatitude: -37.50528021,
+    largestLongitude: 155.638889,
+    smallestLongitude: 138.9992792,
+    stations: [],
+  },
+];
+
+sitesDetails.forEach((site) => {
+  let regionMatch = false;
+
+  for (let i = 0; i < regionDetails.length - 1; i++) {
+    const region = regionDetails[i].name;
+    if (region === site.Region) {
+      regionDetails[i].stations.push(site);
+      regionMatch = true;
+      break;
+    }
+  }
+  if (!regionMatch) {
+    regionDetails[regionDetails.length - 1].stations.push(site);
+    site.Region = "NSW";
+  }
+});
 
 export { sitesDetails, regionDetails };

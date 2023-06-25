@@ -18,7 +18,8 @@ let config = {
   maxBoundsViscosity: 0.9,
 };
 var w = window.innerWidth;
-// console.log(w);
+console.log("w");
+console.log(w);
 // Magnification with which the map will start
 var zoom;
 if (w < 740) {
@@ -82,47 +83,27 @@ L.control.scale({ imperial: false }).addTo(map);
   }
 }
 
-///////////////////////////////////////////////
-// ZOOM TO REGION
-///////////////////////////////////////////////
-{
-  const selectButton = document.querySelector(".select-button");
-  selectButton.addEventListener("click", () => {
-    const selectedRegion = document.querySelector("#select-region").value;
-    if (selectedRegion === "NSW") {
-      map.flyTo([cenLat, cenLng], zoom);
-    } else {
-      var northEastRegionBound = L.latLng(
-          sites.regionDetails[selectedRegion]["largestLatitude"],
-          sites.regionDetails[selectedRegion]["largestLongitude"]
-        ),
-        southWestRegionBound = L.latLng(
-          sites.regionDetails[selectedRegion]["smallestLatitude"],
-          sites.regionDetails[selectedRegion]["smallestLongitude"]
-        ),
-        regionBounds = L.latLngBounds(
-          northEastRegionBound,
-          southWestRegionBound
-        );
-      map.flyToBounds(regionBounds);
-    }
-  });
-}
+// Create the div element
+const divSidebar = document.createElement("div");
 
+// Set the id attribute
+divSidebar.setAttribute("id", "sidebar");
 
+// Append the element to the desired parent element in the DOM
+const parentElement = document.getElementById("mapid"); // Assuming you have an element with id 'mapid' as the parent
+parentElement.appendChild(divSidebar);
 
-///////////////////////////////////////////////
-// STATION MARKER
-///////////////////////////////////////////////
-var featureGroups = L.featureGroup();
-var markersInfo = [];
 var sidebar = L.control
   .sidebar("sidebar", {
     autopan: true,
     position: "right",
   })
   .addTo(map);
-getMarkerInfo();
+
+////////////////////////////////////////////////
+// STATION MARKER
+////////////////////////////////////////////////
+
 var activeStationMarker = null;
 let markerClusterGroup = L.markerClusterGroup({
   iconCreateFunction: function (cluster) {
@@ -136,58 +117,68 @@ let markerClusterGroup = L.markerClusterGroup({
   showCoverageOnHover: false,
 });
 
-function getMarkerInfo() {
-  return new Promise(function (resolve, reject) {
-    $.get("./AQSs_Info/e.csv", function (csvString) {
-      var data = Papa.parse(csvString, {
-        header: true,
-        dynamicTyping: true,
-      }).data;
-
-      for (let i = 0; i < data.length - 1; i++) {
-        var row = data[i];
-        if (row != null) {
-          markersInfo.push(data[i].title);
-        }
-        var latlngs = [];
-        if (row.lat != null && row.lng != null) {
-          latlngs = L.latLng([row.lat, row.lng]);
-          let marker = L.marker(latlngs, {
-            icon: colorMarker("station"),
-          }).bindTooltip(data[i].title, {
-            direction: "top",
-          });
-          marker.on("click", function () {
-            if (activeSensorMarker != null) {
-              activeSensorMarker.setIcon(colorMarker("purpleair"));
-              activeSensorMarker = null;
-            }
-            if (activeStationMarker != null) {
-              activeStationMarker.setIcon(colorMarker("station"));
-            }
-            activeStationMarker = marker;
-            marker.setIcon(colorMarker("selected"));
-            sidebar
-              .setContent(
-                generateMarkerContent(data[i].title, data[i].lat, data[i].lng)
-              )
-              .show();
-          });
-          featureGroups.addLayer(marker);
-          markerClusterGroup.addLayer(marker);
-        }
-      }
-
-      map.addLayer(markerClusterGroup);
-      closeButton.addEventListener("click", () => {
-        closeButtonAction(activeStationMarker,"station");
-      });
-      resolve(markersInfo);
-    });
-  });
+function capitaliseCase(words) {
+  words = words.trim().toLowerCase().split(" ");
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+  }
+  words = words.join(" ");
+  return words;
 }
 
+const regionFeatureGroups = {};
+const regionClusterGroup = L.markerClusterGroup({
+  iconCreateFunction: function (cluster) {
+    const childCount = cluster.getChildCount();
+    return L.divIcon({
+      html: `<img src='./assets/images/markerCluster.svg'>
+              <span>${childCount}</span>`,
+      className: "marker-cluster",
+    });
+  },
+  showCoverageOnHover: false,
+});
+console.log(sites.regionDetails);
+// Create a feature group to store all the regions in one layer and add it to map
+// sites.regionDetails.forEach((region) => {
+//   regionFeatureGroups[region.name] = L.featureGroup();
+// });
+// console.log(regionFeatureGroups);
+// Generate markers for stations
 
+sites.regionDetails.forEach((region) => {
+  regionFeatureGroups[region.name] = L.featureGroup();
+  region.stations.forEach((station) => {
+    console.log(station);
+    let latLngs = L.latLng([station.Latitude, station.Longitude]);
+    let marker = L.marker(latLngs, {
+      icon: colorMarker("station"),
+    }).bindTooltip(capitaliseCase(station.SiteName), { direction: "top" });
+    marker.on("click", () => {
+      if (activeSensorMarker != null) {
+        activeSensorMarker.setIcon(colorMarker("purpleair"));
+        activeSensorMarker = null;
+      }
+      if (activeStationMarker != null) {
+        activeStationMarker.setIcon(colorMarker("station"));
+      }
+      activeStationMarker = marker;
+      marker.setIcon(colorMarker("selected"));
+      sidebar.setContent(generateMarkerContent(station)).show();
+    });
+    const closeButton = document.querySelector(".close");
+    closeButton.addEventListener("click", () => {
+      closeButtonAction(activeStationMarker, "station");
+    });
+
+    regionFeatureGroups[region.name].addLayer(marker);
+  });
+});
+for (const region in regionFeatureGroups) {
+  const featureGroup = regionFeatureGroups[region];
+  regionClusterGroup.addLayer(featureGroup);
+}
+regionClusterGroup.addTo(map);
 
 function colorMarker(state) {
   if (state == "selected") {
@@ -217,13 +208,14 @@ function colorMarker(state) {
   return colorIcon;
 }
 
-function generateMarkerContent(title, lat, lng) {
+function generateMarkerContent(station) {
+  const title = capitaliseCase(station.SiteName);
   const content = `
 	  <div class="marker-content">
 
 	  	<div class="marker-title-container">
 			  <h2 class="marker-title">${title} Station</h2>
-	  		<p class="marker-latlng"><b>Latitude:</b> ${lat} | <b>Longitude:</b> ${lng}</p>
+	  		<p class="marker-latlng"><b>Latitude:</b> ${station.Latitude} | <b>Longitude:</b> ${station.Longitude}</p>
         <div class="marker-title__tabs">
           <h3 class="tab-item active">Forecast</h3>
           <h3 class="tab-item">Relevant historical data</h3>
@@ -270,62 +262,49 @@ function generateMarkerContent(title, lat, lng) {
         (pollutant) => pollutant.value === selectedPollutant
       );
 
-      const selectedRegion = document.querySelector("#select-region").value;
-      let region = null;
-      if (selectedRegion == "Sydney South-west") {
-        region = "SW";
-      } else if (selectedRegion == "Sydney East") {
-        region = "CE";
-      } else if (selectedRegion == "Sydney North-west") {
-        region = "NW";
-      }
       /////////////////////////////////////////////////////
       // Load forecast files
       /////////////////////////////////////////////////////
-      getPollutantDataForLocation(
-        title,
-        selectedPollutantObj.value,
-        // `./AQSs_Info/${region}_forecast_${selectedPollutantObj.label}_${selectedTime}_48_0.csv`,
-        `./AQSs_Info/${region}_forecast_${selectedPollutantObj.label}_${selectedTime}_48_14062023_.csv`,
-        "both"
-      ).then((result) => {
-        // console.log(result);
-        // extract data from forecastData
-        const forecastXValues = result.forecastData.map((d) => d.date);
-        const forecastYValues = result.forecastData.map((d) => d.value);
-        // console.log("Forecast Y:");
-        // console.log(forecastYValues);
-        // console.log("X:");
-        // console.log(forecastXValues);
-        // extract data from historyData
-        const historyXValues = result.historyData.map((d) => d.date);
-        const historyYValues = result.historyData.map((d) => d.value);
-        // console.log("History Y:");
-        // console.log(historyYValues);
-        // console.log("X:");
-        // console.log(historyXValues);
-        // console.log(forecastXValues.map((x, i) => ({ x: x, y: forecastYValues[i] })));
-        // console.log(historyXValues.map((x, i) => ({ x: x, y: historyYValues[i] })));
+      getPollutantDataForLocation(station, selectedPollutantObj, "both").then(
+        (result) => {
+          // console.log(result);
+          // extract data from forecastData
+          const forecastXValues = result.forecastData.map((d) => d.date);
+          const forecastYValues = result.forecastData.map((d) => d.value);
+          // console.log("Forecast Y:");
+          // console.log(forecastYValues);
+          // console.log("X:");
+          // console.log(forecastXValues);
+          // extract data from historyData
+          const historyXValues = result.historyData.map((d) => d.date);
+          const historyYValues = result.historyData.map((d) => d.value);
+          // console.log("History Y:");
+          // console.log(historyYValues);
+          // console.log("X:");
+          // console.log(historyXValues);
+          // console.log(forecastXValues.map((x, i) => ({ x: x, y: forecastYValues[i] })));
+          // console.log(historyXValues.map((x, i) => ({ x: x, y: historyYValues[i] })));
 
-        const stationColorIndex = document.querySelector(
-          ".marker-title-container"
-        );
-        const stationCategory = getCategoryLabel(
-          selectedPollutantObj,
-          forecastYValues[0]
-        );
-        stationColorIndex.classList.add(stationCategory);
+          const stationColorIndex = document.querySelector(
+            ".marker-title-container"
+          );
+          const stationCategory = getCategoryLabel(
+            selectedPollutantObj,
+            forecastYValues[0]
+          );
+          stationColorIndex.classList.add(stationCategory);
 
-        // generate chart for both canvas elements
-        generateChart(
-          ctx1,
-          selectedPollutantObj,
-          historyYValues,
-          forecastYValues,
-          historyXValues,
-          forecastXValues
-        );
-      });
+          // generate chart for both canvas elements
+          generateChart(
+            ctx1,
+            selectedPollutantObj,
+            historyYValues,
+            forecastYValues,
+            historyXValues,
+            forecastXValues
+          );
+        }
+      );
     }
 
     let tabs = document.querySelectorAll(".marker-title__tabs h3");
@@ -482,14 +461,14 @@ function getPurpleAirInfo() {
     }
 
     map.addLayer(purpleairMarkerClusterGroup);
+    const closeButton = document.querySelector(".close");
     closeButton.addEventListener("click", () => {
-      closeButtonAction(activeSensorMarker);
+      closeButtonAction(activeSensorMarker, "purpleair");
     });
     resolve(purpleairInfo);
   });
 }
 
-const closeButton = document.querySelector(".close");
 function closeButtonAction(activeMarker, markerType) {
   if (activeMarker != null) {
     if (markerType === "station") {
@@ -503,7 +482,7 @@ function closeButtonAction(activeMarker, markerType) {
   slider.value = 0;
 }
 
-function toggleMarkerClusterGroup(cluster) {
+function toggleLayerVisibility(cluster) {
   if (map.hasLayer(cluster)) {
     map.removeLayer(cluster);
   } else {
@@ -521,10 +500,66 @@ buttonContainer.addEventListener("click", (event) => {
 
     const buttonId = clickedButton.id;
     if (buttonId === "toggle-button__sensor") {
-      toggleMarkerClusterGroup(purpleairMarkerClusterGroup);
+      toggleLayerVisibility(purpleairMarkerClusterGroup);
     } else if (buttonId === "toggle-button__station") {
-      toggleMarkerClusterGroup(markerClusterGroup);
+      toggleLayerVisibility(markerClusterGroup);
     }
+  }
+});
+
+///////////////////////////////////////////////
+// ZOOM TO REGION
+///////////////////////////////////////////////
+const selectButton = document.querySelector(".select-button");
+selectButton.addEventListener("click", () => {
+  const selectedRegion = document.querySelector("#select-region").value;
+  if (selectedRegion === "NSW") {
+    map.flyTo([cenLat, cenLng], zoom);
+    sites.regionDetails.forEach((region) => {
+      // If map has layers of other regions, make them disapper
+      if (map.hasLayer(regionFeatureGroups[region.name])) {
+        toggleLayerVisibility(regionFeatureGroups[region.name]);
+        console.log("Appear:" + region.name);
+      }
+    });
+    // If map doen't have NSW cluster, make it appears
+    if (!map.hasLayer(regionClusterGroup))
+      toggleLayerVisibility(regionClusterGroup);
+  } else {
+    sites.regionDetails.forEach((region) => {
+      if (region.name === selectedRegion) {
+        // Zoom to boundary of selected region
+        var northEastRegionBound = L.latLng(
+            region.largestLatitude,
+            region.largestLongitude
+          ),
+          southWestRegionBound = L.latLng(
+            region.smallestLatitude,
+            region.smallestLongitude
+          ),
+          regionBounds = L.latLngBounds(
+            northEastRegionBound,
+            southWestRegionBound
+          );
+        map.flyToBounds(regionBounds);
+
+        // Toggle the visibility of selected region
+        // If map has the NSw cluster layer, make it disapper
+        if (map.hasLayer(regionClusterGroup))
+          toggleLayerVisibility(regionClusterGroup);
+        // If map doesn't have the selected region, make it appears
+        if (!map.hasLayer(regionFeatureGroups[region.name])) {
+          toggleLayerVisibility(regionFeatureGroups[region.name]);
+          console.log("Appear:" + region.name);
+        } else regionFeatureGroups[region.name].addTo(map);
+      } else {
+        // If map has other regions, make them disappear
+        if (map.hasLayer(regionFeatureGroups[region.name])) {
+          toggleLayerVisibility(regionFeatureGroups[region.name]);
+          console.log("Disappear:" + region.name);
+        }
+      }
+    });
   }
 });
 
